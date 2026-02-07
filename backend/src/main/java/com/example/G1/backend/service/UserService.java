@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 import com.example.G1.backend.entity.User;
 import com.example.G1.backend.repository.UserRepository;
 import com.example.G1.backend.security.JwtService;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import lombok.RequiredArgsConstructor;
+
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -16,7 +16,9 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
-     private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+
+    
 
     public Map<String, Object> getCurrentUserProfile(String authHeader) {
         String token = authHeader.replace("Bearer ", "");
@@ -25,12 +27,19 @@ public class UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy HH:mm");
+
         return Map.of(
                 "username", user.getUsername(),
                 "email", user.getEmail(),
-                "phoneNumber", user.getPhoneNumber()
+                "phoneNumber", user.getPhoneNumber(),
+                "createdAt", user.getCreatedAt() != null ? user.getCreatedAt().format(formatter) : "",
+                "lastUpdate", user.getLastUpdate() != null ? user.getLastUpdate().format(formatter) : "",
+                "accountStatus", user.isActive() ? "Active" : "Inactive"
         );
     }
+
+
 
     public void updateProfile(String authHeader, String email, String phoneNumber) {
         String token = authHeader.replace("Bearer ", "");

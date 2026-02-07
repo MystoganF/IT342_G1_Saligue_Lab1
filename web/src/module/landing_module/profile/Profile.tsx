@@ -33,6 +33,19 @@ const ProfilePage: React.FC = () => {
   });
   const [tempProfile, setTempProfile] = useState<UserProfile>({ ...profile });
 
+  // Format date nicely
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
   // Fetch user profile on component mount
   useEffect(() => {
     const fetchProfile = async () => {
@@ -62,14 +75,14 @@ const ProfilePage: React.FC = () => {
         }
 
         const data = await response.json();
-        
+
         const userProfile: UserProfile = {
           username: data.username || '',
           email: data.email || '',
           phone: data.phoneNumber || data.phone || '',
           avatar: data.avatar || data.profilePicture || '',
-          createdAt: data.createdAt || 'January 15, 2024',
-          lastLogin: data.lastLogin || 'Today, 10:30 AM',
+          createdAt: formatDate(data.createdAt),
+          lastLogin: formatDate(data.lastUpdate),
           accountStatus: data.accountStatus || 'Active',
         };
 
@@ -86,12 +99,11 @@ const ProfilePage: React.FC = () => {
     fetchProfile();
   }, [token, navigate]);
 
-  // Initialize tempProfile when profile changes
   useEffect(() => {
     setTempProfile({ ...profile });
   }, [profile]);
 
-  // Handle edit toggle with API integration
+  // Edit profile handlers
   const handleEditToggle = () => {
     if (isEditing) {
       handleSaveProfile();
@@ -107,13 +119,9 @@ const ProfilePage: React.FC = () => {
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setTempProfile(prev => ({
-      ...prev,
-      [name]: value,
-    }));
+    setTempProfile(prev => ({ ...prev, [name]: value }));
   };
 
-  // API call to save profile
   const handleSaveProfile = async () => {
     if (!token) {
       navigate('/login');
@@ -130,8 +138,6 @@ const ProfilePage: React.FC = () => {
         body: JSON.stringify({
           email: tempProfile.email,
           phoneNumber: tempProfile.phone,
-          // Add other fields if your API supports them
-          // username: tempProfile.username, // Usually username can't be changed
         }),
       });
 
@@ -140,31 +146,25 @@ const ProfilePage: React.FC = () => {
         throw new Error(errorData.message || 'Failed to update profile');
       }
 
-      const updatedData = await response.json();
-      
-      // Update local state with server response
       setProfile(prev => ({
         ...prev,
-        email: updatedData.email || tempProfile.email,
-        phone: updatedData.phoneNumber || updatedData.phone || tempProfile.phone,
+        email: tempProfile.email,
+        phone: tempProfile.phone,
       }));
-      
+
       setIsEditing(false);
       alert('Profile updated successfully!');
     } catch (error) {
       console.error('Error updating profile:', error);
-      alert(error instanceof Error ? error.message : 'Failed to update profile. Please try again.');
-      setTempProfile({ ...profile }); // Revert changes on error
+      alert(error instanceof Error ? error.message : 'Failed to update profile.');
+      setTempProfile({ ...profile });
     }
   };
 
-  // API call to change password
+  // Password handlers
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setPasswordData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
+    setPasswordData(prev => ({ ...prev, [name]: value }));
   };
 
   const handlePasswordSubmit = async () => {
@@ -201,33 +201,25 @@ const ProfilePage: React.FC = () => {
         throw new Error(errorData.message || 'Failed to change password');
       }
 
-      // Reset password form
-      setPasswordData({
-        oldPassword: '',
-        newPassword: '',
-        confirmPassword: '',
-      });
+      setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
       setIsEditingPassword(false);
-      
       alert('Password changed successfully!');
     } catch (error) {
       console.error('Error changing password:', error);
-      alert(error instanceof Error ? error.message : 'Failed to change password. Please try again.');
+      alert(error instanceof Error ? error.message : 'Failed to change password.');
     }
   };
 
-  // API call to upload avatar
+  // Avatar upload
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !token) return;
 
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('File size too large. Please choose an image smaller than 5MB.');
+      alert('File size too large. Max 5MB.');
       return;
     }
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       alert('Please upload an image file.');
       return;
@@ -235,48 +227,31 @@ const ProfilePage: React.FC = () => {
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      // First update UI immediately for better UX
       const newAvatar = reader.result as string;
-      setProfile(prev => ({
-        ...prev,
-        avatar: newAvatar,
-      }));
-      setTempProfile(prev => ({
-        ...prev,
-        avatar: newAvatar,
-      }));
+      setProfile(prev => ({ ...prev, avatar: newAvatar }));
+      setTempProfile(prev => ({ ...prev, avatar: newAvatar }));
     };
     reader.readAsDataURL(file);
 
-    // Then upload to server
     try {
       const formData = new FormData();
       formData.append('avatar', file);
 
       const response = await fetch('http://localhost:8080/api/users/avatar', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: { 'Authorization': `Bearer ${token}` },
         body: formData,
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to upload avatar');
-      }
+      if (!response.ok) throw new Error('Failed to upload avatar');
 
       const data = await response.json();
-      if (data.avatarUrl) {
-        setProfile(prev => ({
-          ...prev,
-          avatar: data.avatarUrl,
-        }));
-      }
-      
+      if (data.avatarUrl) setProfile(prev => ({ ...prev, avatar: data.avatarUrl }));
+
       alert('Avatar updated successfully!');
     } catch (error) {
       console.error('Error uploading avatar:', error);
-      alert('Failed to upload avatar. Please try again.');
+      alert('Failed to upload avatar.');
     }
   };
 
@@ -295,9 +270,8 @@ const ProfilePage: React.FC = () => {
   return (
     <div className="profile-page">
       <Navbar />
-
-      {/* Main Content */}
       <div className="profile-container">
+        {/* Header */}
         <div className="profile-header">
           <h1 className="profile-title">
             My <span className="accent">Profile</span>
@@ -307,117 +281,62 @@ const ProfilePage: React.FC = () => {
           </p>
         </div>
 
+        {/* Profile Content */}
         <div className="profile-content">
-          {/* Profile Card */}
+          {/* Personal Info */}
           <div className="profile-card">
             <div className="profile-card-header">
               <h2>Personal Information</h2>
               <div className="profile-actions">
                 {isEditing ? (
                   <>
-                    <button 
-                      className="btn btn-secondary btn-small"
-                      onClick={handleCancelEdit}
-                    >
-                      Cancel
-                    </button>
-                    <button 
-                      className="btn btn-primary btn-small"
-                      onClick={handleSaveProfile}
-                    >
-                      Save Changes
-                    </button>
+                    <button className="btn btn-secondary btn-small" onClick={handleCancelEdit}>Cancel</button>
+                    <button className="btn btn-primary btn-small" onClick={handleSaveProfile}>Save Changes</button>
                   </>
                 ) : (
-                  <button 
-                    className="btn btn-primary btn-small"
-                    onClick={handleEditToggle}
-                  >
-                    Edit Profile
-                  </button>
+                  <button className="btn btn-primary btn-small" onClick={handleEditToggle}>Edit Profile</button>
                 )}
               </div>
             </div>
-
             <div className="profile-card-body">
-              {/* Avatar Section */}
+              {/* Avatar */}
               <div className="profile-avatar-section">
                 <div className="avatar-container">
                   <div className="avatar">
-                    {profile.avatar ? (
-                      <img src={profile.avatar} alt="Profile" />
-                    ) : (
-                      <div className="avatar-placeholder">
-                        {profile.username.charAt(0).toUpperCase()}
-                      </div>
-                    )}
+                    {profile.avatar ? <img src={profile.avatar} alt="Profile" /> :
+                      <div className="avatar-placeholder">{profile.username.charAt(0).toUpperCase()}</div>}
                   </div>
                   {isEditing && (
                     <label className="avatar-upload">
-                      <input 
-                        type="file" 
-                        accept="image/*"
-                        onChange={handleAvatarUpload}
-                        hidden
-                      />
+                      <input type="file" accept="image/*" onChange={handleAvatarUpload} hidden />
                       <span className="upload-text">Change Photo</span>
                     </label>
                   )}
                 </div>
               </div>
-
-              {/* Form Fields */}
+              {/* Form */}
               <div className="profile-form">
                 <div className="form-group">
                   <label htmlFor="username">Username</label>
                   {isEditing ? (
-                    <input
-                      type="text"
-                      id="username"
-                      name="username"
-                      value={tempProfile.username}
-                      onChange={handleProfileChange}
-                      className="form-input"
-                      placeholder="Enter your username"
-                      disabled // Username usually cannot be changed
-                    />
+                    <input type="text" id="username" name="username" value={tempProfile.username} onChange={handleProfileChange} disabled className="form-input" />
                   ) : (
                     <div className="form-value">{profile.username}</div>
                   )}
-                  {isEditing && (
-                    <div className="form-hint">Username cannot be changed</div>
-                  )}
+                  {isEditing && <div className="form-hint">Username cannot be changed</div>}
                 </div>
-
                 <div className="form-group">
-                  <label htmlFor="email">Email Address</label>
+                  <label htmlFor="email">Email</label>
                   {isEditing ? (
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={tempProfile.email}
-                      onChange={handleProfileChange}
-                      className="form-input"
-                      placeholder="Enter your email"
-                    />
+                    <input type="email" id="email" name="email" value={tempProfile.email} onChange={handleProfileChange} className="form-input" />
                   ) : (
                     <div className="form-value">{profile.email}</div>
                   )}
                 </div>
-
                 <div className="form-group">
                   <label htmlFor="phone">Phone Number</label>
                   {isEditing ? (
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      value={tempProfile.phone}
-                      onChange={handleProfileChange}
-                      className="form-input"
-                      placeholder="Enter your phone number"
-                    />
+                    <input type="tel" id="phone" name="phone" value={tempProfile.phone} onChange={handleProfileChange} className="form-input" />
                   ) : (
                     <div className="form-value">{profile.phone}</div>
                   )}
@@ -426,85 +345,33 @@ const ProfilePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Password Card */}
+          {/* Security */}
           <div className="profile-card">
             <div className="profile-card-header">
               <h2>Security</h2>
               {!isEditingPassword && (
-                <button 
-                  className="btn btn-primary btn-small"
-                  onClick={() => setIsEditingPassword(true)}
-                >
-                  Change Password
-                </button>
+                <button className="btn btn-primary btn-small" onClick={() => setIsEditingPassword(true)}>Change Password</button>
               )}
             </div>
-
             <div className="profile-card-body">
               {isEditingPassword ? (
                 <div className="password-form">
                   <div className="form-group">
                     <label htmlFor="oldPassword">Old Password</label>
-                    <input
-                      type="password"
-                      id="oldPassword"
-                      name="oldPassword"
-                      value={passwordData.oldPassword}
-                      onChange={handlePasswordChange}
-                      className="form-input"
-                      placeholder="Enter your old password"
-                    />
+                    <input type="password" id="oldPassword" name="oldPassword" value={passwordData.oldPassword} onChange={handlePasswordChange} className="form-input" />
                   </div>
-
                   <div className="form-group">
                     <label htmlFor="newPassword">New Password</label>
-                    <input
-                      type="password"
-                      id="newPassword"
-                      name="newPassword"
-                      value={passwordData.newPassword}
-                      onChange={handlePasswordChange}
-                      className="form-input"
-                      placeholder="Enter new password"
-                    />
-                    <div className="form-hint">
-                      Must be at least 6 characters
-                    </div>
+                    <input type="password" id="newPassword" name="newPassword" value={passwordData.newPassword} onChange={handlePasswordChange} className="form-input" />
+                    <div className="form-hint">Must be at least 6 characters</div>
                   </div>
-
                   <div className="form-group">
                     <label htmlFor="confirmPassword">Confirm New Password</label>
-                    <input
-                      type="password"
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      value={passwordData.confirmPassword}
-                      onChange={handlePasswordChange}
-                      className="form-input"
-                      placeholder="Confirm new password"
-                    />
+                    <input type="password" id="confirmPassword" name="confirmPassword" value={passwordData.confirmPassword} onChange={handlePasswordChange} className="form-input" />
                   </div>
-
                   <div className="password-actions">
-                    <button 
-                      className="btn btn-secondary btn-small"
-                      onClick={() => {
-                        setIsEditingPassword(false);
-                        setPasswordData({
-                          oldPassword: '',
-                          newPassword: '',
-                          confirmPassword: '',
-                        });
-                      }}
-                    >
-                      Cancel
-                    </button>
-                    <button 
-                      className="btn btn-primary btn-small"
-                      onClick={handlePasswordSubmit}
-                    >
-                      Update Password
-                    </button>
+                    <button className="btn btn-secondary btn-small" onClick={() => { setIsEditingPassword(false); setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' }); }}>Cancel</button>
+                    <button className="btn btn-primary btn-small" onClick={handlePasswordSubmit}>Update Password</button>
                   </div>
                 </div>
               ) : (
@@ -513,38 +380,36 @@ const ProfilePage: React.FC = () => {
                     <span className="security-label">Password</span>
                     <span className="security-value">••••••••</span>
                   </div>
-                  <div className="security-note">
-                    Last changed 30 days ago
-                  </div>
+                  <div className="security-note">Last changed 30 days ago</div>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Account Info Card */}
-        <div className="profile-card">
-          <div className="profile-card-header">
-            <h2>Account Information</h2>
-          </div>
-          <div className="profile-card-body">
-            <div className="account-info">
-              <div className="info-item">
-                <span className="info-label">Account Created</span>
-                <span className="info-value">{profile.createdAt || 'January 15, 2024'}</span>
-              </div>
-              <div className="info-item">
-                <span className="info-label">Last Update</span> {/* <-- changed here */}
-                <span className="info-value">{profile.lastLogin || 'Today, 10:30 AM'}</span>
-              </div>
-              <div className="info-item">
-                <span className="info-label">Account Status</span>
-                <span className="info-value status-active">
-                  {profile.accountStatus || 'Active'}
-                </span>
+          {/* Account Info */}
+          <div className="profile-card">
+            <div className="profile-card-header">
+              <h2>Account Information</h2>
+            </div>
+            <div className="profile-card-body">
+              <div className="account-info">
+                <div className="info-item">
+                  <span className="info-label">Account Created</span>
+                  <span className="info-value">{profile.createdAt}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Last Update</span>
+                  <span className="info-value">{profile.lastLogin}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Account Status</span>
+                  <span className={`info-value ${profile.accountStatus === 'Active' ? 'status-active' : 'status-inactive'}`}>
+                    {profile.accountStatus}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
         </div>
       </div>
