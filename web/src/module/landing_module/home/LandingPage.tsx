@@ -13,7 +13,7 @@ const LandingPage: React.FC = () => {
       <section className="hero">
         <div className="hero-content">
           <h1 className="hero-title">
-            Welcome to <span className="accent">Kean</span>
+            Welcome to <span className="accent">Untitled</span>
           </h1>
           <p className="hero-description">
             Experience the future of digital interaction with our cutting-edge platform

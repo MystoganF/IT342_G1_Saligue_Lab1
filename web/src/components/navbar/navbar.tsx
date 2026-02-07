@@ -9,19 +9,48 @@ const Navbar: React.FC = () => {
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [username, setUsername] = useState('Profile');
+  const [loading, setLoading] = useState(true); // optional loading state
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-    // Navbar.tsx
-  const [username, setUsername] = useState('Profile');
-
+  // Fetch user profile from API
   useEffect(() => {
-    const storedUsername = localStorage.getItem('username');
-    if (storedUsername) setUsername(storedUsername);
-  }, []); 
+    const fetchUser = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setLoading(false);
+        return;
+      }
 
+      try {
+        const res = await fetch('http://localhost:8080/api/users/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
 
+        if (!res.ok) {
+          throw new Error('Failed to fetch user');
+        }
+
+        const data = await res.json();
+        setUsername(data.username || 'Profile');
+        // Update localStorage for consistency
+        localStorage.setItem('username', data.username);
+      } catch (err) {
+        console.error(err);
+        setUsername('Profile');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -51,19 +80,27 @@ const Navbar: React.FC = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('username'); // ✅ also remove username
-    setUsername('Profile'); // update state immediately
+    localStorage.removeItem('username');
+    setUsername('Profile');
     setShowLogoutModal(false);
     navigate('/login');
   };
 
-  const closeModal = () => setShowLogoutModal(false);
+  const [isClosing, setIsClosing] = useState(false);
+
+const closeModal = () => {
+  setIsClosing(true); // trigger fade-out
+  setTimeout(() => {
+    setShowLogoutModal(false);
+    setIsClosing(false);
+  }, 250); // match the animation duration
+};
+
 
   return (
     <>
       <nav className="navbar">
         <div className="nav-container">
-          {/* Logo */}
           <div className="nav-brand">
             <Link to="/" className="brand-link">
               <div className="brand-logo">
@@ -73,7 +110,6 @@ const Navbar: React.FC = () => {
             </Link>
           </div>
 
-          {/* Navigation Links */}
           <div className="nav-links">
             {['/', '/about', '/gallery', '/product', '/contact'].map((path, i) => (
               <Link
@@ -86,12 +122,12 @@ const Navbar: React.FC = () => {
             ))}
           </div>
 
-          {/* Profile Dropdown */}
           <div className="nav-profile">
             <button
               ref={buttonRef}
               className={`profile-button ${isDropdownOpen ? 'active' : ''}`}
               onClick={toggleDropdown}
+              disabled={loading} // optional, disables button until user fetched
             >
               <div className="profile-icon">
                 <svg viewBox="0 0 24 24" fill="currentColor">
@@ -117,55 +153,51 @@ const Navbar: React.FC = () => {
         </div>
       </nav>
 
-      {/* Logout Confirmation Modal */}
-      {showLogoutModal && (
-        <div className="success-message-overlay">
-          <div className="success-message">
-            <div className="success-icon">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M12 9v4M12 17h0M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <h3>Confirm Logout</h3>
-            <p>Are you sure you want to logout from your account?</p>
-            <div className="success-progress">
-              <div
-                className="progress-bar"
-                style={{ width: '100%', background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)' }}
-              ></div>
-            </div>
-            <div
-              style={{
-                marginTop: '30px',
-                display: 'flex',
-                gap: '15px',
-                justifyContent: 'center',
-              }}
-            >
-              <button
-                className="register-button"
-                style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #4338ca 100%)' }}
-                onClick={closeModal}
-              >
-                Cancel
-              </button>
-              <button
-                className="register-button"
-                style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)' }}
-                onClick={handleLogout}
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+     {/* Logout Confirmation Modal */}
+{showLogoutModal && (
+  <div className="success-message-overlay">
+    <div className="success-message">
+      <div className="success-icon">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path
+            d="M12 9v4M12 17h0M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
+      <h3>Confirm Logout</h3>
+      <p>Are you sure you want to logout from your account?</p>
+
+      <div
+        style={{
+          marginTop: '30px',
+          display: 'flex',
+          gap: '15px',
+          justifyContent: 'center',
+        }}
+      >
+        <button
+          className="register-button"
+          style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #4338ca 100%)' }}
+          onClick={closeModal}
+        >
+          Cancel
+        </button>
+        <button
+          className="register-button"
+          style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)' }}
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </>
   );
 };
