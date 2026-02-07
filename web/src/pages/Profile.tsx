@@ -250,13 +250,6 @@ const Profile: React.FC = () => {
         </div>
       </main>
 
-      {/* Footer Note */}
-      <div className="implementation-note">
-        <p>
-          <strong>Note:</strong> This is a frontend-only implementation. 
-          Profile update functionality will be implemented when backend is ready.
-        </p>
-      </div>
     </div>
   );
 };
