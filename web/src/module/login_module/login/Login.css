@@ -1,12 +1,4 @@
-.login-page {
-  min-height: 100vh;
-  display: flex;
-  background: #0a0a0a;
-  color: #ffffff;
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-}
+/* Base Login Page */
 .login-page {
   min-height: 100vh;
   display: flex;
@@ -19,18 +11,32 @@
   margin-top: -2rem;
   margin-bottom: -2rem;
   overflow: hidden;
+  opacity: 0;
+  animation: fadeInPage 0.8s ease forwards;
 }
 
+@keyframes fadeInPage {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Brand Section */
 .login-brand-section {
   flex: 1;
   background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
   padding: 60px;
   display: flex;
-  /* align to top so brand content can match form vertical offset */
   align-items: flex-start;
   justify-content: center;
   position: relative;
   overflow: hidden;
+  transform: translateX(-30px);
+  opacity: 0;
+  animation: slideInLeft 1s ease forwards 0.3s;
+}
+
+@keyframes slideInLeft {
+  to { transform: translateX(0); opacity: 1; }
 }
 
 .login-brand-section::before {
@@ -45,13 +51,18 @@
     radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
 }
 
+/* Brand Content */
 .brand-content {
   max-width: 500px;
   z-index: 1;
-  /* add top spacing so the main welcome content isn't hidden by the
-     absolutely positioned logo; increase so the welcome heading lines
-     up vertically with the username input row on the form */
-  padding-top: 120px;
+  padding-top: 100px;
+  transform: translateY(20px);
+  opacity: 0;
+  animation: fadeSlideUp 1s ease forwards 0.5s;
+}
+
+@keyframes fadeSlideUp {
+  to { transform: translateY(0); opacity: 1; }
 }
 
 .company-logo {
@@ -59,10 +70,17 @@
   align-items: center;
   gap: 20px;
   margin-bottom: 0;
-  position: absolute;
-  top: 24px;
-  left: 24px;
-  z-index: 3;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  transform: scale(1);
+  opacity: 0;
+  animation: popIn 0.6s ease forwards 0.3s;
+}
+
+@keyframes popIn {
+  to { transform: scale(1); opacity: 1; }
 }
 
 .logo-circle {
@@ -77,6 +95,11 @@
   font-weight: bold;
   color: white;
   box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.logo-circle:hover {
+  transform: scale(1.1);
 }
 
 .company-name {
@@ -86,6 +109,11 @@
   color: #ffffff;
   margin: 0;
   text-transform: uppercase;
+  transition: color 0.3s ease;
+}
+
+.company-name:hover {
+  color: #60a5fa;
 }
 
 .welcome-text h2 {
@@ -96,6 +124,9 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeSlideUp 1s ease forwards 0.7s;
 }
 
 .welcome-text p {
@@ -103,9 +134,12 @@
   line-height: 1.6;
   color: #a0aec0;
   margin: 0;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeSlideUp 1s ease forwards 0.9s;
 }
 
-/* Right side - Form Section */
+/* Right Side Form */
 .login-form-section {
   flex: 1;
   background: #111111;
@@ -113,6 +147,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transform: translateX(30px);
+  opacity: 0;
+  animation: slideInRight 1s ease forwards 0.3s;
+}
+
+@keyframes slideInRight {
+  to { transform: translateX(0); opacity: 1; }
 }
 
 .form-container {
@@ -129,6 +170,9 @@
   font-weight: 700;
   margin: 0 0 12px 0;
   color: #ffffff;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeSlideUp 0.8s ease forwards 1s;
 }
 
 .form-subtitle {
@@ -136,6 +180,9 @@
   color: #a0aec0;
   margin: 0;
   line-height: 1.6;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeSlideUp 0.8s ease forwards 1.2s;
 }
 
 /* Form Styles */
@@ -145,16 +192,9 @@
 
 .form-group {
   margin-bottom: 28px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 10px;
-  color: #cbd5e0;
-  font-size: 14px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeSlideUp 0.6s ease forwards 1.4s;
 }
 
 .form-group input {
@@ -258,15 +298,18 @@
   justify-content: center;
   gap: 10px;
   margin-bottom: 32px;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeSlideUp 0.6s ease forwards 1.6s;
 }
 
 .login-button:hover:not(:disabled) {
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.02);
   box-shadow: 0 12px 24px rgba(59, 130, 246, 0.3);
 }
 
 .login-button:active:not(:disabled) {
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
 }
 
 .login-button:disabled {
@@ -274,6 +317,7 @@
   cursor: not-allowed;
 }
 
+/* Spinner */
 .spinner {
   width: 20px;
   height: 20px;
@@ -293,6 +337,9 @@
   justify-content: space-between;
   align-items: center;
   font-size: 14px;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeSlideUp 0.6s ease forwards 1.8s;
 }
 
 .signup-link,
@@ -325,6 +372,9 @@
   font-style: italic;
   margin: 0;
   letter-spacing: 1px;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeSlideUp 0.6s ease forwards 2s;
 }
 
 /* Responsive Design */

@@ -1,4 +1,3 @@
-// src/pages/Register.tsx
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Register.css';
@@ -137,6 +136,14 @@ const Register: React.FC = () => {
 
   return (
     <div className="register-page">
+      {/* Logo - Top Right */}
+      <div className="company-logo">
+        <div className="logo-circle">
+          <span className="logo-text">CL</span>
+        </div>
+        <h1 className="company-name">Kean</h1>
+      </div>
+
       {/* Success Message Overlay */}
       {showSuccess && (
         <div className="success-message-overlay">
@@ -184,12 +191,6 @@ const Register: React.FC = () => {
       {/* Left side - Brand/Info Section */}
       <div className="register-brand-section">
         <div className="brand-content">
-          <div className="company-logo">
-            <div className="logo-circle">
-              <span className="logo-text">CL</span>
-            </div>
-            <h1 className="company-name">Kean</h1>
-          </div>
           
           <div className="welcome-text">
             <h2>Join Us...</h2>

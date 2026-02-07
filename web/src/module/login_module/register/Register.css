@@ -40,8 +40,7 @@
 .brand-content {
   max-width: 500px;
   z-index: 1;
-  /* match form section top padding so headings align horizontally */
-  padding-top: 60px;
+  padding-top: 100px;
 }
 
 .company-logo {
@@ -49,10 +48,10 @@
   align-items: center;
   gap: 20px;
   margin-bottom: 0;
-  position: absolute;
-  top: 24px;
-  left: 24px;
-  z-index: 3;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
 }
 
 .logo-circle {
