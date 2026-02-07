@@ -69,25 +69,44 @@ const Register: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!validateForm()) return;
+
+  setIsLoading(true);
+
+  try {
+    const response = await fetch('http://localhost:8080/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: formData.username,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || 'Registration failed');
     }
 
-    setIsLoading(true);
-    
-    // Form submission logic will go here
-    console.log('Registration attempt:', formData);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      // Redirect to login after successful registration
-      navigate('/login');
-    }, 1500);
-  };
+    // success
+    navigate('/login');
+
+  } catch (error: any) {
+    setErrors({
+      general: error.message || 'Something went wrong',
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <div className="register-page">

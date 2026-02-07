@@ -26,7 +26,6 @@ public class AuthService {
                 .email(request.getEmail())
                 .phoneNumber(request.getPhone())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .priId(1L)
                 .isActive(true)
                 .build();
 

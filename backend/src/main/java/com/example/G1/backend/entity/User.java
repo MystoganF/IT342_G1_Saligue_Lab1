@@ -17,9 +17,6 @@ public class User {
     @Column(name = "user_id")
     private Long userID;
 
-    @Column(name = "pri_id")
-    private Long priId;
-
     @Column(nullable = false, unique = true)
     private String username;
 
