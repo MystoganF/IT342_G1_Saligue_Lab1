@@ -11,45 +11,48 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
+  e.preventDefault();
+  setIsLoading(true);
+  setError(null);
 
-    try {
-      const response = await fetch('http://localhost:8080/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
+  try {
+    const response = await fetch('http://localhost:8080/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Login failed');
-      }
-
+    if (!response.ok) {
       const data = await response.json();
-      const token = data.token;
-
-      // Save JWT token in localStorage
-      localStorage.setItem('token', token);
-
-      // Optionally save username if "remember me" is checked
-      if (rememberMe) {
-        localStorage.setItem('username', username);
-      } else {
-        localStorage.removeItem('username');
-      }
-
-      // Redirect to dashboard
-      navigate('/dashboard');
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
+      throw new Error(data.error || 'Login failed');
     }
-  };
+
+    const data = await response.json();
+    const token = data.token;
+    const loggedUsername = data.username || username; // fallback to input
+
+    // ✅ Save JWT token
+    localStorage.setItem('token', token);
+
+    // ✅ Always save username
+    localStorage.setItem('username', loggedUsername);
+
+    // Optionally save "remember me" flag
+    if (rememberMe) {
+      localStorage.setItem('rememberMe', 'true');
+    } else {
+      localStorage.removeItem('rememberMe');
+    }
+
+    // Redirect
+    navigate('/dashboard');
+  } catch (err: any) {
+    setError(err.message);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <div className="login-page">

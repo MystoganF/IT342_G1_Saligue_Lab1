@@ -238,7 +238,7 @@ const ProfilePage: React.FC = () => {
           {/* Password Card */}
           <div className="profile-card">
             <div className="profile-card-header">
-              <h2>Security Settings</h2>
+              <h2>Security</h2>
               {!isEditingPassword && (
                 <button 
                   className="btn btn-primary btn-small"
