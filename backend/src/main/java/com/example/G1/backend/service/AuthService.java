@@ -2,8 +2,12 @@ package com.example.G1.backend.service;
 
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+
 import com.example.G1.backend.dto.LoginRequest;
 import com.example.G1.backend.dto.RegisterRequest;
 import com.example.G1.backend.entity.User;
@@ -53,6 +57,32 @@ public class AuthService {
 
     public Optional<User> findByUsername(String username){
         return userRepository.findByUsername(username);
+    }
+
+    public String extractUsername(String token) {
+    return jwtService.extractUsername(token);
+    }
+
+    public void save(User user) {
+    userRepository.save(user);
+}
+
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getMyProfile(
+        @RequestHeader("Authorization") String authHeader) {
+
+    String token = authHeader.replace("Bearer ", "");
+    String username = jwtService.extractUsername(token);
+
+    User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+    return ResponseEntity.ok(Map.of(
+            "username", user.getUsername(),
+            "email", user.getEmail(),
+            "phoneNumber", user.getPhoneNumber()
+     ));
     }
 
      

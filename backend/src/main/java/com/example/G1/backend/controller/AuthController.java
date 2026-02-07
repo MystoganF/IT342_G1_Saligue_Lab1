@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.G1.backend.dto.LoginRequest;
 import com.example.G1.backend.dto.RegisterRequest;
 import com.example.G1.backend.service.AuthService;
-import com.example.G1.backend.entity.User;
+
 
 @RestController
 @RequestMapping("/api/auth")
