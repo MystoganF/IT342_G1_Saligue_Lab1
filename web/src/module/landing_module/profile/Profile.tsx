@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../../components/navbar/navbar';
 import './Profile.css';
@@ -8,106 +8,187 @@ interface UserProfile {
   email: string;
   phone: string;
   avatar?: string;
+  createdAt?: string;
+  lastLogin?: string;
+  accountStatus?: string;
 }
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [tempProfile, setTempProfile] = useState<UserProfile | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [profile, setProfile] = useState<UserProfile>({
+    username: '',
+    email: '',
+    phone: '',
+  });
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
   const [isEditingPassword, setIsEditingPassword] = useState(false);
   const [passwordData, setPasswordData] = useState({
     oldPassword: '',
     newPassword: '',
     confirmPassword: '',
   });
+  const [tempProfile, setTempProfile] = useState<UserProfile>({ ...profile });
 
+  // Fetch user profile on component mount
   useEffect(() => {
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-
     const fetchProfile = async () => {
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
       try {
-        const res = await fetch('http://localhost:8080/api/users/me', {
-          headers: { Authorization: `Bearer ${token}` },
+        setIsLoading(true);
+        const response = await fetch('http://localhost:8080/api/users/me', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         });
 
-        if (res.status === 401) {
+        if (response.status === 401) {
           localStorage.removeItem('token');
           navigate('/login');
           return;
         }
 
-        const data = await res.json();
+        if (!response.ok) {
+          throw new Error('Failed to fetch profile');
+        }
+
+        const data = await response.json();
+        
         const userProfile: UserProfile = {
-          username: data.username,
-          email: data.email,
-          phone: data.phoneNumber,
+          username: data.username || '',
+          email: data.email || '',
+          phone: data.phoneNumber || data.phone || '',
+          avatar: data.avatar || data.profilePicture || '',
+          createdAt: data.createdAt || 'January 15, 2024',
+          lastLogin: data.lastLogin || 'Today, 10:30 AM',
+          accountStatus: data.accountStatus || 'Active',
         };
 
         setProfile(userProfile);
         setTempProfile(userProfile);
-      } catch (err) {
-        console.error('Failed to load profile', err);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        alert('Failed to load profile. Please try again.');
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchProfile();
   }, [token, navigate]);
 
-  if (!profile || !tempProfile) return <div className="profile-page">Loading...</div>;
+  // Initialize tempProfile when profile changes
+  useEffect(() => {
+    setTempProfile({ ...profile });
+  }, [profile]);
+
+  // Handle edit toggle with API integration
+  const handleEditToggle = () => {
+    if (isEditing) {
+      handleSaveProfile();
+    } else {
+      setIsEditing(true);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setTempProfile({ ...profile });
+    setIsEditing(false);
+  };
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setTempProfile(prev => prev && { ...prev, [name]: value });
+    setTempProfile(prev => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
+  // API call to save profile
   const handleSaveProfile = async () => {
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
     try {
-      const res = await fetch('http://localhost:8080/api/users/me', {
+      const response = await fetch('http://localhost:8080/api/users/me', {
         method: 'PUT',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           email: tempProfile.email,
           phoneNumber: tempProfile.phone,
+          // Add other fields if your API supports them
+          // username: tempProfile.username, // Usually username can't be changed
         }),
       });
 
-      if (!res.ok) return alert('Failed to update profile');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update profile');
+      }
 
-      setProfile(tempProfile);
+      const updatedData = await response.json();
+      
+      // Update local state with server response
+      setProfile(prev => ({
+        ...prev,
+        email: updatedData.email || tempProfile.email,
+        phone: updatedData.phoneNumber || updatedData.phone || tempProfile.phone,
+      }));
+      
       setIsEditing(false);
-      alert('Profile updated!');
-    } catch (err) {
-      console.error(err);
+      alert('Profile updated successfully!');
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert(error instanceof Error ? error.message : 'Failed to update profile. Please try again.');
+      setTempProfile({ ...profile }); // Revert changes on error
     }
   };
 
+  // API call to change password
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setPasswordData(prev => ({ ...prev, [name]: value }));
+    setPasswordData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handlePasswordSubmit = async () => {
-    if (passwordData.newPassword !== passwordData.confirmPassword)
-      return alert('Passwords do not match');
-    if (passwordData.newPassword.length < 6)
-      return alert('Password must be at least 6 characters');
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      alert('New passwords do not match!');
+      return;
+    }
+
+    if (passwordData.newPassword.length < 6) {
+      alert('New password must be at least 6 characters!');
+      return;
+    }
+
+    if (!token) {
+      navigate('/login');
+      return;
+    }
 
     try {
-      const res = await fetch('http://localhost:8080/api/users/change-password', {
+      const response = await fetch('http://localhost:8080/api/users/change-password', {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           oldPassword: passwordData.oldPassword,
@@ -115,123 +196,363 @@ const ProfilePage: React.FC = () => {
         }),
       });
 
-      if (!res.ok) return alert('Failed to change password');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to change password');
+      }
 
-      setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
+      // Reset password form
+      setPasswordData({
+        oldPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+      });
       setIsEditingPassword(false);
-      alert('Password updated!');
-    } catch (err) {
-      console.error(err);
+      
+      alert('Password changed successfully!');
+    } catch (error) {
+      console.error('Error changing password:', error);
+      alert(error instanceof Error ? error.message : 'Failed to change password. Please try again.');
     }
   };
 
-  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // API call to upload avatar
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file || !token) return;
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size too large. Please choose an image smaller than 5MB.');
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please upload an image file.');
+      return;
+    }
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      setProfile(prev => prev && { ...prev, avatar: reader.result as string });
-      setTempProfile(prev => prev && { ...prev, avatar: reader.result as string });
+      // First update UI immediately for better UX
+      const newAvatar = reader.result as string;
+      setProfile(prev => ({
+        ...prev,
+        avatar: newAvatar,
+      }));
+      setTempProfile(prev => ({
+        ...prev,
+        avatar: newAvatar,
+      }));
     };
     reader.readAsDataURL(file);
+
+    // Then upload to server
+    try {
+      const formData = new FormData();
+      formData.append('avatar', file);
+
+      const response = await fetch('http://localhost:8080/api/users/avatar', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload avatar');
+      }
+
+      const data = await response.json();
+      if (data.avatarUrl) {
+        setProfile(prev => ({
+          ...prev,
+          avatar: data.avatarUrl,
+        }));
+      }
+      
+      alert('Avatar updated successfully!');
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      alert('Failed to upload avatar. Please try again.');
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="profile-page">
+        <Navbar />
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="profile-page">
       <Navbar />
 
+      {/* Main Content */}
       <div className="profile-container">
-        <h1 className="profile-title">My Profile</h1>
+        <div className="profile-header">
+          <h1 className="profile-title">
+            My <span className="accent">Profile</span>
+          </h1>
+          <p className="profile-subtitle">
+            Manage your account information and security settings
+          </p>
+        </div>
 
-        <div className="profile-grid">
-          {/* Left Column: Avatar & Personal Info */}
-          <div className="profile-left">
-            <div className="avatar-section">
-              {profile.avatar ? (
-                <img src={profile.avatar} alt="avatar" className="avatar" />
-              ) : (
-                <div className="avatar-placeholder">{profile.username.charAt(0).toUpperCase()}</div>
-              )}
-              {isEditing && (
-                <input type="file" accept="image/*" onChange={handleAvatarUpload} className="avatar-upload"/>
-              )}
-            </div>
-
-            <div className="profile-info">
-              <div className="info-group">
-                <label>Username</label>
-                <div>{profile.username}</div>
-              </div>
-
-              <div className="info-group">
-                <label>Email</label>
-                {isEditing ? (
-                  <input name="email" value={tempProfile.email} onChange={handleProfileChange} />
-                ) : (
-                  <div>{profile.email}</div>
-                )}
-              </div>
-
-              <div className="info-group">
-                <label>Phone</label>
-                {isEditing ? (
-                  <input name="phone" value={tempProfile.phone} onChange={handleProfileChange} />
-                ) : (
-                  <div>{profile.phone}</div>
-                )}
-              </div>
-
+        <div className="profile-content">
+          {/* Profile Card */}
+          <div className="profile-card">
+            <div className="profile-card-header">
+              <h2>Personal Information</h2>
               <div className="profile-actions">
-                {!isEditing ? (
-                  <button onClick={() => setIsEditing(true)}>Edit Profile</button>
-                ) : (
+                {isEditing ? (
                   <>
-                    <button onClick={() => setIsEditing(false)}>Cancel</button>
-                    <button onClick={handleSaveProfile}>Save</button>
+                    <button 
+                      className="btn btn-secondary btn-small"
+                      onClick={handleCancelEdit}
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      className="btn btn-primary btn-small"
+                      onClick={handleSaveProfile}
+                    >
+                      Save Changes
+                    </button>
                   </>
+                ) : (
+                  <button 
+                    className="btn btn-primary btn-small"
+                    onClick={handleEditToggle}
+                  >
+                    Edit Profile
+                  </button>
                 )}
               </div>
             </div>
-          </div>
 
-          {/* Right Column: Security */}
-          <div className="profile-right">
-            <h2>Security</h2>
-            {!isEditingPassword ? (
-              <button onClick={() => setIsEditingPassword(true)}>Change Password</button>
-            ) : (
-              <div className="password-form">
-                <input
-                  type="password"
-                  name="oldPassword"
-                  placeholder="Old password"
-                  value={passwordData.oldPassword}
-                  onChange={handlePasswordChange}
-                />
-                <input
-                  type="password"
-                  name="newPassword"
-                  placeholder="New password"
-                  value={passwordData.newPassword}
-                  onChange={handlePasswordChange}
-                />
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  placeholder="Confirm new password"
-                  value={passwordData.confirmPassword}
-                  onChange={handlePasswordChange}
-                />
-
-                <div className="password-actions">
-                  <button onClick={() => setIsEditingPassword(false)}>Cancel</button>
-                  <button onClick={handlePasswordSubmit}>Update Password</button>
+            <div className="profile-card-body">
+              {/* Avatar Section */}
+              <div className="profile-avatar-section">
+                <div className="avatar-container">
+                  <div className="avatar">
+                    {profile.avatar ? (
+                      <img src={profile.avatar} alt="Profile" />
+                    ) : (
+                      <div className="avatar-placeholder">
+                        {profile.username.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                  {isEditing && (
+                    <label className="avatar-upload">
+                      <input 
+                        type="file" 
+                        accept="image/*"
+                        onChange={handleAvatarUpload}
+                        hidden
+                      />
+                      <span className="upload-text">Change Photo</span>
+                    </label>
+                  )}
                 </div>
               </div>
-            )}
+
+              {/* Form Fields */}
+              <div className="profile-form">
+                <div className="form-group">
+                  <label htmlFor="username">Username</label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      id="username"
+                      name="username"
+                      value={tempProfile.username}
+                      onChange={handleProfileChange}
+                      className="form-input"
+                      placeholder="Enter your username"
+                      disabled // Username usually cannot be changed
+                    />
+                  ) : (
+                    <div className="form-value">{profile.username}</div>
+                  )}
+                  {isEditing && (
+                    <div className="form-hint">Username cannot be changed</div>
+                  )}
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="email">Email Address</label>
+                  {isEditing ? (
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={tempProfile.email}
+                      onChange={handleProfileChange}
+                      className="form-input"
+                      placeholder="Enter your email"
+                    />
+                  ) : (
+                    <div className="form-value">{profile.email}</div>
+                  )}
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="phone">Phone Number</label>
+                  {isEditing ? (
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      value={tempProfile.phone}
+                      onChange={handleProfileChange}
+                      className="form-input"
+                      placeholder="Enter your phone number"
+                    />
+                  ) : (
+                    <div className="form-value">{profile.phone}</div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Password Card */}
+          <div className="profile-card">
+            <div className="profile-card-header">
+              <h2>Security</h2>
+              {!isEditingPassword && (
+                <button 
+                  className="btn btn-primary btn-small"
+                  onClick={() => setIsEditingPassword(true)}
+                >
+                  Change Password
+                </button>
+              )}
+            </div>
+
+            <div className="profile-card-body">
+              {isEditingPassword ? (
+                <div className="password-form">
+                  <div className="form-group">
+                    <label htmlFor="oldPassword">Old Password</label>
+                    <input
+                      type="password"
+                      id="oldPassword"
+                      name="oldPassword"
+                      value={passwordData.oldPassword}
+                      onChange={handlePasswordChange}
+                      className="form-input"
+                      placeholder="Enter your old password"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="newPassword">New Password</label>
+                    <input
+                      type="password"
+                      id="newPassword"
+                      name="newPassword"
+                      value={passwordData.newPassword}
+                      onChange={handlePasswordChange}
+                      className="form-input"
+                      placeholder="Enter new password"
+                    />
+                    <div className="form-hint">
+                      Must be at least 6 characters
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="confirmPassword">Confirm New Password</label>
+                    <input
+                      type="password"
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      value={passwordData.confirmPassword}
+                      onChange={handlePasswordChange}
+                      className="form-input"
+                      placeholder="Confirm new password"
+                    />
+                  </div>
+
+                  <div className="password-actions">
+                    <button 
+                      className="btn btn-secondary btn-small"
+                      onClick={() => {
+                        setIsEditingPassword(false);
+                        setPasswordData({
+                          oldPassword: '',
+                          newPassword: '',
+                          confirmPassword: '',
+                        });
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      className="btn btn-primary btn-small"
+                      onClick={handlePasswordSubmit}
+                    >
+                      Update Password
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="security-info">
+                  <div className="security-item">
+                    <span className="security-label">Password</span>
+                    <span className="security-value">••••••••</span>
+                  </div>
+                  <div className="security-note">
+                    Last changed 30 days ago
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Account Info Card */}
+          <div className="profile-card">
+            <div className="profile-card-header">
+              <h2>Account Information</h2>
+            </div>
+            <div className="profile-card-body">
+              <div className="account-info">
+                <div className="info-item">
+                  <span className="info-label">Account Created</span>
+                  <span className="info-value">{profile.createdAt || 'January 15, 2024'}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Last Login</span>
+                  <span className="info-value">{profile.lastLogin || 'Today, 10:30 AM'}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Account Status</span>
+                  <span className="info-value status-active">
+                    {profile.accountStatus || 'Active'}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
+
+      {/* Background Effects */}
+      <div className="background-effects">
+        <div className="blob blob-1"></div>
+        <div className="blob blob-2"></div>
+        <div className="blob blob-3"></div>
       </div>
     </div>
   );
