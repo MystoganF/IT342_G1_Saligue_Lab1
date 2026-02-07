@@ -77,6 +77,7 @@
   margin-bottom: 2rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid rgba(45, 55, 72, 0.3);
+  gap: 50px;
 }
 
 .profile-card-header h2 {

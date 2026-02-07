@@ -36,13 +36,15 @@ public class UserController {
 
         userService.updateProfile(
                 authHeader,
+                payload.get("username"),
                 payload.get("email"),
                 payload.get("phoneNumber")
         );
-        System.out.println(">>> /api/users/me HIT");
 
         return ResponseEntity.ok(Map.of("message", "Profile updated successfully"));
     }
+
+
 
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(

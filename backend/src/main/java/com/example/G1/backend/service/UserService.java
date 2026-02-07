@@ -41,17 +41,26 @@ public class UserService {
 
 
 
-    public void updateProfile(String authHeader, String email, String phoneNumber) {
+    public void updateProfile(String authHeader, String username, String email, String phoneNumber) {
         String token = authHeader.replace("Bearer ", "");
-        String username = jwtService.extractUsername(token);
+        String currentUsername = jwtService.extractUsername(token);
 
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findByUsername(currentUsername)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        // Only check if username is different
+        if (!user.getUsername().equals(username) && userRepository.existsByUsername(username)) {
+            throw new RuntimeException("Username already taken");
+        }
+
+        user.setUsername(username);
         user.setEmail(email);
         user.setPhoneNumber(phoneNumber);
         userRepository.save(user);
     }
+
+
+
 
     public void changePassword(String authHeader, String oldPassword, String newPassword) {
         String token = authHeader.replace("Bearer ", "");

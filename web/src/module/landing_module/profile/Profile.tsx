@@ -1,3 +1,4 @@
+// src/pages/Profile/ProfilePage.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../../components/navbar/navbar';
@@ -22,16 +23,24 @@ const ProfilePage: React.FC = () => {
     email: '',
     phone: '',
   });
+  const [tempProfile, setTempProfile] = useState<UserProfile>({
+    username: '',
+    email: '',
+    phone: '',
+  });
 
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [isEditingPassword, setIsEditingPassword] = useState(false);
+
   const [passwordData, setPasswordData] = useState({
     oldPassword: '',
     newPassword: '',
     confirmPassword: '',
   });
-  const [tempProfile, setTempProfile] = useState<UserProfile>({ ...profile });
+
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   // Format date nicely
   const formatDate = (dateStr?: string) => {
@@ -46,71 +55,49 @@ const ProfilePage: React.FC = () => {
     });
   };
 
-  // Fetch user profile on component mount
+  // Fetch profile on mount
   useEffect(() => {
     const fetchProfile = async () => {
       if (!token) {
         navigate('/login');
         return;
       }
-
       try {
         setIsLoading(true);
         const response = await fetch('http://localhost:8080/api/users/me', {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });
-
-        if (response.status === 401) {
-          localStorage.removeItem('token');
-          navigate('/login');
-          return;
-        }
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch profile');
-        }
+        if (!response.ok) throw new Error('Failed to fetch profile');
 
         const data = await response.json();
-
-        const userProfile: UserProfile = {
+        const mappedProfile: UserProfile = {
           username: data.username || '',
           email: data.email || '',
           phone: data.phoneNumber || data.phone || '',
-          avatar: data.avatar || data.profilePicture || '',
+          avatar: data.avatar || '',
           createdAt: formatDate(data.createdAt),
           lastLogin: formatDate(data.lastUpdate),
           accountStatus: data.accountStatus || 'Active',
         };
 
-        setProfile(userProfile);
-        setTempProfile(userProfile);
+        setProfile(mappedProfile);
+        setTempProfile(mappedProfile);
       } catch (error) {
         console.error('Error fetching profile:', error);
-        alert('Failed to load profile. Please try again.');
+        alert('Failed to load profile.');
       } finally {
         setIsLoading(false);
       }
     };
-
     fetchProfile();
   }, [token, navigate]);
 
-  useEffect(() => {
-    setTempProfile({ ...profile });
-  }, [profile]);
-
-  // Edit profile handlers
-  const handleEditToggle = () => {
-    if (isEditing) {
-      handleSaveProfile();
-    } else {
-      setIsEditing(true);
-    }
-  };
+  // Handlers for editing profile
+  const handleEditToggle = () => setIsEditing(true);
 
   const handleCancelEdit = () => {
     setTempProfile({ ...profile });
@@ -127,33 +114,31 @@ const ProfilePage: React.FC = () => {
       navigate('/login');
       return;
     }
-
     try {
       const response = await fetch('http://localhost:8080/api/users/me', {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          username: tempProfile.username,
           email: tempProfile.email,
           phoneNumber: tempProfile.phone,
         }),
       });
+      if (!response.ok) throw new Error('Failed to update profile');
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update profile');
-      }
-
-      setProfile(prev => ({
-        ...prev,
-        email: tempProfile.email,
-        phone: tempProfile.phone,
-      }));
-
+      setProfile({ ...tempProfile });
       setIsEditing(false);
-      alert('Profile updated successfully!');
+
+      // Show success overlay and logout
+      setSuccessMessage('Profile updated successfully! Logging you out to apply changes...');
+      setShowSuccess(true);
+      setTimeout(() => {
+        localStorage.removeItem('token');
+        navigate('/login');
+      }, 3000);
     } catch (error) {
       console.error('Error updating profile:', error);
       alert(error instanceof Error ? error.message : 'Failed to update profile.');
@@ -161,7 +146,7 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  // Password handlers
+  // Handlers for changing password
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setPasswordData(prev => ({ ...prev, [name]: value }));
@@ -172,22 +157,19 @@ const ProfilePage: React.FC = () => {
       alert('New passwords do not match!');
       return;
     }
-
     if (passwordData.newPassword.length < 6) {
       alert('New password must be at least 6 characters!');
       return;
     }
-
     if (!token) {
       navigate('/login');
       return;
     }
-
     try {
       const response = await fetch('http://localhost:8080/api/users/change-password', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -195,67 +177,25 @@ const ProfilePage: React.FC = () => {
           newPassword: passwordData.newPassword,
         }),
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to change password');
-      }
+      if (!response.ok) throw new Error('Failed to change password');
 
       setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
       setIsEditingPassword(false);
-      alert('Password changed successfully!');
+
+      // Show success overlay and logout
+      setSuccessMessage('Password changed successfully! Logging you out to apply changes...');
+      setShowSuccess(true);
+      setTimeout(() => {
+        localStorage.removeItem('token');
+        navigate('/login');
+      }, 3000);
     } catch (error) {
       console.error('Error changing password:', error);
       alert(error instanceof Error ? error.message : 'Failed to change password.');
     }
   };
 
-  // Avatar upload
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !token) return;
-
-    if (file.size > 5 * 1024 * 1024) {
-      alert('File size too large. Max 5MB.');
-      return;
-    }
-
-    if (!file.type.startsWith('image/')) {
-      alert('Please upload an image file.');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const newAvatar = reader.result as string;
-      setProfile(prev => ({ ...prev, avatar: newAvatar }));
-      setTempProfile(prev => ({ ...prev, avatar: newAvatar }));
-    };
-    reader.readAsDataURL(file);
-
-    try {
-      const formData = new FormData();
-      formData.append('avatar', file);
-
-      const response = await fetch('http://localhost:8080/api/users/avatar', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
-        body: formData,
-      });
-
-      if (!response.ok) throw new Error('Failed to upload avatar');
-
-      const data = await response.json();
-      if (data.avatarUrl) setProfile(prev => ({ ...prev, avatar: data.avatarUrl }));
-
-      alert('Avatar updated successfully!');
-    } catch (error) {
-      console.error('Error uploading avatar:', error);
-      alert('Failed to upload avatar.');
-    }
-  };
-
-  if (isLoading) {
+  if (isLoading)
     return (
       <div className="profile-page">
         <Navbar />
@@ -265,7 +205,6 @@ const ProfilePage: React.FC = () => {
         </div>
       </div>
     );
-  }
 
   return (
     <div className="profile-page">
@@ -287,91 +226,113 @@ const ProfilePage: React.FC = () => {
           <div className="profile-card">
             <div className="profile-card-header">
               <h2>Personal Information</h2>
-              <div className="profile-actions">
-                {isEditing ? (
-                  <>
-                    <button className="btn btn-secondary btn-small" onClick={handleCancelEdit}>Cancel</button>
-                    <button className="btn btn-primary btn-small" onClick={handleSaveProfile}>Save Changes</button>
-                  </>
-                ) : (
-                  <button className="btn btn-primary btn-small" onClick={handleEditToggle}>Edit Profile</button>
-                )}
-              </div>
+              {isEditing ? (
+                <>
+                  <button className="btn btn-secondary btn-small" onClick={handleCancelEdit}>
+                    Cancel
+                  </button>
+                  <button className="btn btn-primary btn-small" onClick={handleSaveProfile}>
+                    Save Changes
+                  </button>
+                </>
+              ) : (
+                <button className="btn btn-primary btn-small" onClick={handleEditToggle}>
+                  Edit Profile
+                </button>
+              )}
             </div>
             <div className="profile-card-body">
-              {/* Avatar */}
-              <div className="profile-avatar-section">
-                <div className="avatar-container">
-                  <div className="avatar">
-                    {profile.avatar ? <img src={profile.avatar} alt="Profile" /> :
-                      <div className="avatar-placeholder">{profile.username.charAt(0).toUpperCase()}</div>}
-                  </div>
-                  {isEditing && (
-                    <label className="avatar-upload">
-                      <input type="file" accept="image/*" onChange={handleAvatarUpload} hidden />
-                      <span className="upload-text">Change Photo</span>
-                    </label>
-                  )}
-                </div>
-              </div>
-              {/* Form */}
               <div className="profile-form">
                 <div className="form-group">
-                  <label htmlFor="username">Username</label>
-                  {isEditing ? (
-                    <input type="text" id="username" name="username" value={tempProfile.username} onChange={handleProfileChange} disabled className="form-input" />
-                  ) : (
-                    <div className="form-value">{profile.username}</div>
-                  )}
-                  {isEditing && <div className="form-hint">Username cannot be changed</div>}
+                  <label>Username</label>
+                  <input
+                    name="username"
+                    value={tempProfile.username}
+                    onChange={handleProfileChange}
+                    className="form-input"
+                    disabled={!isEditing}
+                  />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="email">Email</label>
-                  {isEditing ? (
-                    <input type="email" id="email" name="email" value={tempProfile.email} onChange={handleProfileChange} className="form-input" />
-                  ) : (
-                    <div className="form-value">{profile.email}</div>
-                  )}
+                  <label>Email</label>
+                  <input
+                    name="email"
+                    value={tempProfile.email}
+                    onChange={handleProfileChange}
+                    className="form-input"
+                    disabled={!isEditing}
+                  />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="phone">Phone Number</label>
-                  {isEditing ? (
-                    <input type="tel" id="phone" name="phone" value={tempProfile.phone} onChange={handleProfileChange} className="form-input" />
-                  ) : (
-                    <div className="form-value">{profile.phone}</div>
-                  )}
+                  <label>Phone</label>
+                  <input
+                    name="phone"
+                    value={tempProfile.phone}
+                    onChange={handleProfileChange}
+                    className="form-input"
+                    disabled={!isEditing}
+                  />
                 </div>
               </div>
             </div>
           </div>
 
           {/* Security */}
-          <div className="profile-card">
+          <div className="profile-card" style={{ minWidth: '350px' }}>
             <div className="profile-card-header">
               <h2>Security</h2>
               {!isEditingPassword && (
-                <button className="btn btn-primary btn-small" onClick={() => setIsEditingPassword(true)}>Change Password</button>
+                <button
+                  className="btn btn-primary btn-small"
+                  onClick={() => setIsEditingPassword(true)}
+                >
+                  Change Password
+                </button>
               )}
             </div>
             <div className="profile-card-body">
               {isEditingPassword ? (
                 <div className="password-form">
                   <div className="form-group">
-                    <label htmlFor="oldPassword">Old Password</label>
-                    <input type="password" id="oldPassword" name="oldPassword" value={passwordData.oldPassword} onChange={handlePasswordChange} className="form-input" />
+                    <label>Old Password</label>
+                    <input
+                      type="password"
+                      name="oldPassword"
+                      value={passwordData.oldPassword}
+                      onChange={handlePasswordChange}
+                      className="form-input"
+                    />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="newPassword">New Password</label>
-                    <input type="password" id="newPassword" name="newPassword" value={passwordData.newPassword} onChange={handlePasswordChange} className="form-input" />
-                    <div className="form-hint">Must be at least 6 characters</div>
+                    <label>New Password</label>
+                    <input
+                      type="password"
+                      name="newPassword"
+                      value={passwordData.newPassword}
+                      onChange={handlePasswordChange}
+                      className="form-input"
+                    />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="confirmPassword">Confirm New Password</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" value={passwordData.confirmPassword} onChange={handlePasswordChange} className="form-input" />
+                    <label>Confirm New Password</label>
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      value={passwordData.confirmPassword}
+                      onChange={handlePasswordChange}
+                      className="form-input"
+                    />
                   </div>
                   <div className="password-actions">
-                    <button className="btn btn-secondary btn-small" onClick={() => { setIsEditingPassword(false); setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' }); }}>Cancel</button>
-                    <button className="btn btn-primary btn-small" onClick={handlePasswordSubmit}>Update Password</button>
+                    <button
+                      className="btn btn-secondary btn-small"
+                      onClick={() => setIsEditingPassword(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button className="btn btn-primary btn-small" onClick={handlePasswordSubmit}>
+                      Update Password
+                    </button>
                   </div>
                 </div>
               ) : (
@@ -380,7 +341,6 @@ const ProfilePage: React.FC = () => {
                     <span className="security-label">Password</span>
                     <span className="security-value">••••••••</span>
                   </div>
-                  <div className="security-note">Last changed 30 days ago</div>
                 </div>
               )}
             </div>
@@ -402,7 +362,6 @@ const ProfilePage: React.FC = () => {
                   <span className="info-value">{profile.lastLogin}</span>
                 </div>
                 <div className="info-item">
-                  <span className="info-label">Account Status</span>
                   <span className={`info-value ${profile.accountStatus === 'Active' ? 'status-active' : 'status-inactive'}`}>
                     {profile.accountStatus}
                   </span>
@@ -410,16 +369,32 @@ const ProfilePage: React.FC = () => {
               </div>
             </div>
           </div>
-
         </div>
       </div>
 
-      {/* Background Effects */}
-      <div className="background-effects">
-        <div className="blob blob-1"></div>
-        <div className="blob blob-2"></div>
-        <div className="blob blob-3"></div>
-      </div>
+      {/* Success Overlay */}
+      {showSuccess && (
+        <div className="success-message-overlay">
+          <div className="success-message">
+            <div className="success-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+            <h3>Success!</h3>
+            <p>{successMessage}</p>
+            <div className="success-progress">
+              <div className="progress-bar"></div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
