@@ -53,7 +53,8 @@ const Navbar: React.FC = () => {
           </Link>
         </div>
 
-        {/* Profile/Login Section */}
+        
+        
         <div className="nav-profile">
           <Link 
             to="/dashboard" 
@@ -65,11 +66,12 @@ const Navbar: React.FC = () => {
               </svg>
             </div>
             <span className="profile-text">Profile</span>
-          </Link>
+            </Link>
+          
         </div>
       </div>
     </nav>
   );
-};
+}
 
 export default Navbar;
