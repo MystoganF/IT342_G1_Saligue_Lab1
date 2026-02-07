@@ -522,29 +522,30 @@ const ProfilePage: React.FC = () => {
           </div>
 
           {/* Account Info Card */}
-          <div className="profile-card">
-            <div className="profile-card-header">
-              <h2>Account Information</h2>
-            </div>
-            <div className="profile-card-body">
-              <div className="account-info">
-                <div className="info-item">
-                  <span className="info-label">Account Created</span>
-                  <span className="info-value">{profile.createdAt || 'January 15, 2024'}</span>
-                </div>
-                <div className="info-item">
-                  <span className="info-label">Last Login</span>
-                  <span className="info-value">{profile.lastLogin || 'Today, 10:30 AM'}</span>
-                </div>
-                <div className="info-item">
-                  <span className="info-label">Account Status</span>
-                  <span className="info-value status-active">
-                    {profile.accountStatus || 'Active'}
-                  </span>
-                </div>
+        <div className="profile-card">
+          <div className="profile-card-header">
+            <h2>Account Information</h2>
+          </div>
+          <div className="profile-card-body">
+            <div className="account-info">
+              <div className="info-item">
+                <span className="info-label">Account Created</span>
+                <span className="info-value">{profile.createdAt || 'January 15, 2024'}</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">Last Update</span> {/* <-- changed here */}
+                <span className="info-value">{profile.lastLogin || 'Today, 10:30 AM'}</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">Account Status</span>
+                <span className="info-value status-active">
+                  {profile.accountStatus || 'Active'}
+                </span>
               </div>
             </div>
           </div>
+        </div>
+
         </div>
       </div>
 
