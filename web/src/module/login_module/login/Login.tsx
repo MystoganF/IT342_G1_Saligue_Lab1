@@ -1,31 +1,58 @@
+// src/pages/Login.tsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
+
+interface LoginResponse {
+  message: string;
+}
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Form submission logic will go here
-    console.log('Login attempt:', { username, password, rememberMe });
-    
-    // Simulate API call
-    setTimeout(() => {
+    setError(null);
+
+    try {
+      const response = await fetch('http://localhost:8080/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || 'Login failed');
+      }
+
+      const data: LoginResponse = await response.json();
+      console.log('Login success:', data);
+
+      // Optionally, save session/token if your backend sends one
+      // localStorage.setItem('token', data.token);
+
+      navigate('/dashboard'); // redirect on success
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || 'Something went wrong');
+    } finally {
       setIsLoading(false);
-      navigate('/dashboard');
-    }, 1000);
+    }
   };
 
   return (
     <div className="login-page">
-      {/* Left side - Brand/Info Section */}
+      {/* Left - Brand/Info */}
       <div className="login-brand-section">
         <div className="brand-content">
           <div className="company-logo">
@@ -34,28 +61,29 @@ const Login: React.FC = () => {
             </div>
             <h1 className="company-name">Kean</h1>
           </div>
-          
+
           <div className="welcome-text">
             <h2>Welcome to...</h2>
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
-              sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.  
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Right side - Login Form */}
+      {/* Right - Login Form */}
       <div className="login-form-section">
         <div className="form-container">
           <div className="form-header">
             <h1>Login</h1>
             <p className="form-subtitle">
-              Welcome! Login to get amazing discounts and offers only for you.
+              Login to access your account and exclusive features.
             </p>
           </div>
 
           <form className="login-form" onSubmit={handleSubmit}>
+            {/* Username */}
             <div className="form-group">
               <label htmlFor="username">User Name</label>
               <input
@@ -69,6 +97,7 @@ const Login: React.FC = () => {
               />
             </div>
 
+            {/* Password */}
             <div className="form-group">
               <label htmlFor="password">Password</label>
               <input
@@ -82,6 +111,7 @@ const Login: React.FC = () => {
               />
             </div>
 
+            {/* Remember Me */}
             <div className="form-options">
               <label className="checkbox-label">
                 <input
@@ -95,11 +125,11 @@ const Login: React.FC = () => {
               </label>
             </div>
 
-            <button 
-              type="submit" 
-              className="login-button"
-              disabled={isLoading}
-            >
+            {/* Error Message */}
+            {error && <p className="error-message">{error}</p>}
+
+            {/* Submit Button */}
+            <button type="submit" className="login-button" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <span className="spinner"></span>
@@ -110,6 +140,7 @@ const Login: React.FC = () => {
               )}
             </button>
 
+            {/* Footer Links */}
             <div className="form-footer">
               <Link to="/register" className="signup-link">
                 New User? Signup
