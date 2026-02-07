@@ -1,4 +1,3 @@
-// src/pages/Login.tsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
@@ -33,14 +32,14 @@ const Login: React.FC = () => {
             <div className="logo-circle">
               <span className="logo-text">CL</span>
             </div>
-            <h1 className="company-name">COMPANY LOGO</h1>
+            <h1 className="company-name">Kean</h1>
           </div>
           
           <div className="welcome-text">
             <h2>Welcome to...</h2>
             <p>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
-              sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.  
             </p>
           </div>
         </div>

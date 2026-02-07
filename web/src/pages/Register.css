@@ -1,13 +1,5 @@
-.login-page {
-  min-height: 100vh;
-  display: flex;
-  background: #0a0a0a;
-  color: #ffffff;
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-}
-.login-page {
+/* src/pages/Register.css */
+.register-page {
   min-height: 100vh;
   display: flex;
   background: #0a0a0a;
@@ -21,19 +13,19 @@
   overflow: hidden;
 }
 
-.login-brand-section {
+/* Left side - Brand Section */
+.register-brand-section {
   flex: 1;
   background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
   padding: 60px;
   display: flex;
-  /* align to top so brand content can match form vertical offset */
   align-items: flex-start;
   justify-content: center;
   position: relative;
   overflow: hidden;
 }
 
-.login-brand-section::before {
+.register-brand-section::before {
   content: '';
   position: absolute;
   top: 0;
@@ -48,10 +40,8 @@
 .brand-content {
   max-width: 500px;
   z-index: 1;
-  /* add top spacing so the main welcome content isn't hidden by the
-     absolutely positioned logo; increase so the welcome heading lines
-     up vertically with the username input row on the form */
-  padding-top: 120px;
+  /* match form section top padding so headings align horizontally */
+  padding-top: 60px;
 }
 
 .company-logo {
@@ -106,13 +96,15 @@
 }
 
 /* Right side - Form Section */
-.login-form-section {
+.register-form-section {
   flex: 1;
   background: #111111;
   padding: 60px;
   display: flex;
-  align-items: center;
+  /* top-align form content so it lines up with the left column start */
+  align-items: flex-start;
   justify-content: center;
+  overflow-y: auto;
 }
 
 .form-container {
@@ -121,7 +113,7 @@
 }
 
 .form-header {
-  margin-bottom: 48px;
+  margin-bottom: 36px;
 }
 
 .form-header h1 {
@@ -139,12 +131,12 @@
 }
 
 /* Form Styles */
-.login-form {
+.register-form {
   margin-bottom: 40px;
 }
 
 .form-group {
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 }
 
 .form-group label {
@@ -184,19 +176,33 @@
   cursor: not-allowed;
 }
 
+/* Error States */
+.form-group input.error {
+  border-color: #ef4444;
+}
+
+.error-message {
+  display: block;
+  margin-top: 6px;
+  color: #ef4444;
+  font-size: 13px;
+  font-weight: 500;
+}
+
 /* Checkbox */
 .form-options {
-  margin-bottom: 32px;
+  margin: 24px 0 32px;
 }
 
 .checkbox-label {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   cursor: pointer;
   color: #cbd5e0;
-  font-size: 15px;
+  font-size: 14px;
   position: relative;
+  line-height: 1.5;
 }
 
 .checkbox-label input {
@@ -215,6 +221,8 @@
   border-radius: 5px;
   position: relative;
   transition: all 0.3s ease;
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .checkbox-label input:checked ~ .checkmark {
@@ -239,11 +247,23 @@
   display: block;
 }
 
-/* Login Button */
-.login-button {
+.terms-link {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.terms-link:hover {
+  color: #60a5fa;
+  text-decoration: underline;
+}
+
+/* Register Button */
+.register-button {
   width: 100%;
   padding: 18px;
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -260,16 +280,16 @@
   margin-bottom: 32px;
 }
 
-.login-button:hover:not(:disabled) {
+.register-button:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 12px 24px rgba(16, 185, 129, 0.3);
 }
 
-.login-button:active:not(:disabled) {
+.register-button:active:not(:disabled) {
   transform: translateY(0);
 }
 
-.login-button:disabled {
+.register-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
@@ -289,15 +309,12 @@
 
 /* Form Footer Links */
 .form-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  text-align: center;
   font-size: 14px;
 }
 
-.signup-link,
-.forgot-link {
-  color: #3b82f6;
+.login-link {
+  color: #10b981;
   text-decoration: none;
   font-weight: 500;
   transition: all 0.3s ease;
@@ -305,10 +322,9 @@
   border-radius: 6px;
 }
 
-.signup-link:hover,
-.forgot-link:hover {
-  color: #60a5fa;
-  background: rgba(59, 130, 246, 0.1);
+.login-link:hover {
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.1);
   text-decoration: none;
 }
 
@@ -329,12 +345,14 @@
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .login-page {
+  .register-page {
     flex-direction: column;
+    height: auto;
+    margin: 0;
   }
   
-  .login-brand-section,
-  .login-form-section {
+  .register-brand-section,
+  .register-form-section {
     padding: 40px;
   }
   
@@ -342,14 +360,14 @@
     font-size: 36px;
   }
   
-  .company-logo {
-    margin-bottom: 40px;
+  .brand-content {
+    padding-top: 80px;
   }
 }
 
 @media (max-width: 640px) {
-  .login-brand-section,
-  .login-form-section {
+  .register-brand-section,
+  .register-form-section {
     padding: 32px 24px;
   }
   
@@ -367,17 +385,15 @@
     font-size: 18px;
   }
   
-  .form-footer {
-    flex-direction: column;
-    gap: 16px;
-    align-items: flex-start;
-  }
-  
   .welcome-text h2 {
     font-size: 28px;
   }
   
   .welcome-text p {
     font-size: 16px;
+  }
+  
+  .register-form-section {
+    overflow-y: visible;
   }
 }
