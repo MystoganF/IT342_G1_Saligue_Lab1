@@ -1,9 +1,9 @@
 // src/App.tsx
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import LandingPage from './pages/LandingPage';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Profile from './pages/Profile';
+import LandingPage from './module/landing_module/home/LandingPage';
+import Login from './module/login_module/login/Login';
+import Register from './module/login_module/register/Register';
+import Profile from './module/landing_module/profile/Profile';
 import './App.css';
 
 function App() {
