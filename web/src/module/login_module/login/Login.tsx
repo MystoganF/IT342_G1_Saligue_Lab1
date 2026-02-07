@@ -1,11 +1,6 @@
-// src/pages/Login.tsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
-
-interface LoginResponse {
-  message: string;
-}
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -13,10 +8,9 @@ const Login: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
@@ -31,20 +25,27 @@ const Login: React.FC = () => {
       });
 
       if (!response.ok) {
-        const text = await response.text();
-        throw new Error(text || 'Login failed');
+        const data = await response.json();
+        throw new Error(data.error || 'Login failed');
       }
 
-      const data: LoginResponse = await response.json();
-      console.log('Login success:', data);
+      const data = await response.json();
+      const token = data.token;
 
-      // Optionally, save session/token if your backend sends one
-      // localStorage.setItem('token', data.token);
+      // Save JWT token in localStorage
+      localStorage.setItem('token', token);
 
-      navigate('/dashboard'); // redirect on success
+      // Optionally save username if "remember me" is checked
+      if (rememberMe) {
+        localStorage.setItem('username', username);
+      } else {
+        localStorage.removeItem('username');
+      }
+
+      // Redirect to dashboard
+      navigate('/dashboard');
     } catch (err: any) {
-      console.error(err);
-      setError(err.message || 'Something went wrong');
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -52,7 +53,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="login-page">
-      {/* Left - Brand/Info */}
+      {/* Left - Branding Section */}
       <div className="login-brand-section">
         <div className="brand-content">
           <div className="company-logo">
@@ -61,13 +62,9 @@ const Login: React.FC = () => {
             </div>
             <h1 className="company-name">Kean</h1>
           </div>
-
           <div className="welcome-text">
-            <h2>Welcome to...</h2>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            </p>
+            <h2>Welcome Back!</h2>
+            <p>Log in to access your account and enjoy exclusive features.</p>
           </div>
         </div>
       </div>
@@ -78,14 +75,15 @@ const Login: React.FC = () => {
           <div className="form-header">
             <h1>Login</h1>
             <p className="form-subtitle">
-              Login to access your account and exclusive features.
+              Enter your credentials to continue.
             </p>
           </div>
 
-          <form className="login-form" onSubmit={handleSubmit}>
-            {/* Username */}
+          <form className="login-form" onSubmit={handleLogin}>
+            {error && <div className="error-message">{error}</div>}
+
             <div className="form-group">
-              <label htmlFor="username">User Name</label>
+              <label htmlFor="username">Username</label>
               <input
                 type="text"
                 id="username"
@@ -97,7 +95,6 @@ const Login: React.FC = () => {
               />
             </div>
 
-            {/* Password */}
             <div className="form-group">
               <label htmlFor="password">Password</label>
               <input
@@ -111,7 +108,6 @@ const Login: React.FC = () => {
               />
             </div>
 
-            {/* Remember Me */}
             <div className="form-options">
               <label className="checkbox-label">
                 <input
@@ -125,11 +121,11 @@ const Login: React.FC = () => {
               </label>
             </div>
 
-            {/* Error Message */}
-            {error && <p className="error-message">{error}</p>}
-
-            {/* Submit Button */}
-            <button type="submit" className="login-button" disabled={isLoading}>
+            <button
+              type="submit"
+              className="login-button"
+              disabled={isLoading}
+            >
               {isLoading ? (
                 <>
                   <span className="spinner"></span>
@@ -140,10 +136,9 @@ const Login: React.FC = () => {
               )}
             </button>
 
-            {/* Footer Links */}
             <div className="form-footer">
               <Link to="/register" className="signup-link">
-                New User? Signup
+                New User? Sign Up
               </Link>
               <Link to="/forgot-password" className="forgot-link">
                 Forgot your password?
@@ -152,7 +147,7 @@ const Login: React.FC = () => {
           </form>
 
           <div className="feature-text">
-            <p>Lorem ipsum dolor sit amet</p>
+            <p>Securely access your account anytime, anywhere.</p>
           </div>
         </div>
       </div>
