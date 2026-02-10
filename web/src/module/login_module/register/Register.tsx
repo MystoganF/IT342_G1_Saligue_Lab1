@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Register.css";
 
@@ -6,7 +6,7 @@ const Register: React.FC = () => {
   const navigate = useNavigate();
 
   // ===============================
-  // State for form fields
+  // Form state
   // ===============================
   const [formData, setFormData] = useState({
     username: "",
@@ -16,9 +16,18 @@ const Register: React.FC = () => {
     confirmPassword: "",
   });
 
-  // Field errors and general error
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+
+  // ===============================
+  // Auto-redirect if user already logged in
+  // ===============================
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/dashboard"); // redirect to landing/dashboard
+    }
+  }, [navigate]);
 
   // ===============================
   // Handle input changes
@@ -26,12 +35,9 @@ const Register: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // Clear error for this field
+    // Clear field-specific error
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -48,21 +54,18 @@ const Register: React.FC = () => {
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    // Username validation
     if (!formData.username.trim()) {
       newErrors.username = "Username is required";
     } else if (formData.username.length < 3) {
       newErrors.username = "Username must be at least 3 characters";
     }
 
-    // Email validation
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Please enter a valid email address";
     }
 
-    // Phone validation (digits only)
     const phone = formData.phone.replace(/\D/g, "");
     if (!phone) {
       newErrors.phone = "Phone number is required";
@@ -70,14 +73,12 @@ const Register: React.FC = () => {
       newErrors.phone = "Please enter a valid phone number";
     }
 
-    // Password validation
     if (!formData.password) {
       newErrors.password = "Password is required";
     } else if (formData.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters";
     }
 
-    // Confirm password validation
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = "Please confirm your password";
     } else if (formData.password !== formData.confirmPassword) {
@@ -94,7 +95,6 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Stop if form is invalid
     if (!validateForm()) return;
 
     setIsLoading(true);
@@ -129,13 +129,14 @@ const Register: React.FC = () => {
       }
 
       if (!response.ok) {
-        // Show backend error directly
         setErrors({ general: errorMessage });
         return;
       }
 
-      // On success, navigate to login page
-      navigate("/login");
+      // ===============================
+      // On success, navigate to dashboard directly
+      // ===============================
+      navigate("/dashboard");
     } catch (err) {
       console.error("Network or server error:", err);
       setErrors({ general: "Registration failed: network or server error" });
@@ -145,7 +146,7 @@ const Register: React.FC = () => {
   };
 
   // ===============================
-  // Render the form
+  // Render
   // ===============================
   return (
     <div className="register-page">

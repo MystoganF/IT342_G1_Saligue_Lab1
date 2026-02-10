@@ -19,7 +19,6 @@ public class AuthController {
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
-
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
 
@@ -42,9 +41,6 @@ public class AuthController {
                     .body(Map.of("message", e.getMessage()));
         }
     }
-
-
-
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest request) {
