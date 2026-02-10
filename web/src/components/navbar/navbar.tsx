@@ -1,4 +1,3 @@
-// src/components/Navbar.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Navbar.css';
@@ -10,12 +9,12 @@ const Navbar: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [username, setUsername] = useState('Profile');
-  const [loading, setLoading] = useState(true); // optional loading state
+  const [loading, setLoading] = useState(true); 
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  // Fetch user profile from API
+
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem('token');
@@ -36,12 +35,11 @@ const Navbar: React.FC = () => {
         }
 
         const data = await res.json();
-        setUsername(data.username || 'Profile');
-        // Update localStorage for consistency
+        setUsername(data.username);
         localStorage.setItem('username', data.username);
       } catch (err) {
         console.error(err);
-        setUsername('Profile');
+        setUsername('');
       } finally {
         setLoading(false);
       }

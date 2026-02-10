@@ -22,10 +22,30 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        authService.register(request);
-        return ResponseEntity.ok("User registered successfully");
+
+        try {
+            authService.register(request);
+            return ResponseEntity.ok(
+                    Map.of("message", "User registered successfully")
+            );
+
+        } catch (RuntimeException e) {
+
+            // Duplicate email or username
+            if (e.getMessage().contains("Email") || e.getMessage().contains("Username")) {
+                return ResponseEntity.status(409)
+                        .body(Map.of("message", e.getMessage()));
+            }
+
+            // Other errors
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", e.getMessage()));
+        }
     }
-    
+
+
+
+
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest request) {
         try {
