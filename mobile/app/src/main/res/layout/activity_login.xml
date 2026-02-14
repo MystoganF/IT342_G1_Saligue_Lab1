@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#FFFFFF"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <!-- Company Logo -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CL"
+            android:textSize="48sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kean"
+            android:textSize="24sp"
+            android:layout_marginBottom="32dp" />
+
+        <!-- Welcome Text -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Welcome Back!"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Log in to access your account and enjoy exclusive features."
+            android:textSize="14sp"
+            android:layout_marginBottom="24dp"
+            android:gravity="center"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp" />
+
+        <!-- Username Input -->
+        <EditText
+            android:id="@+id/etUsername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Username"
+            android:inputType="textPersonName"
+            android:padding="12dp"
+            android:background="@android:drawable/edit_text"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Password Input -->
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:padding="12dp"
+            android:background="@android:drawable/edit_text"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Remember Me Checkbox -->
+        <CheckBox
+            android:id="@+id/cbRememberMe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Remember me"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Login Button -->
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="LOGIN"
+            android:backgroundTint="#6200EE"
+            android:textColor="#FFFFFF"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Error / Block Message -->
+        <TextView
+            android:id="@+id/tvMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FF0000"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone" />
+
+        <!-- Footer Links -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/tvSignUp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New User? Sign Up"
+                android:textColor="#6200EE"
+                android:paddingEnd="16dp" />
+
+            <TextView
+                android:id="@+id/tvForgotPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Forgot your password?"
+                android:textColor="#6200EE" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
