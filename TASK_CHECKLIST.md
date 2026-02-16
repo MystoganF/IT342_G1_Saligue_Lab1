@@ -82,47 +82,42 @@
   - [x] Implement input validation
     - Commit: [feat: add login page UI with dark theme]
 
-  
 
 - [x] Initialize Android Kotlin project 
   - Commit: [feat(mobile): intial setup]
-  
 
+- [x] Created Register page with working backend impementation.
+  - Commit: [feat(mobile_register): made working register with apicalls from backend]
 
+- [x] Created Login page with working backend impementation.
+  - Commit: [feat(mobile-login): added working login with backend logic.]
+
+- [x] Created Landing page without backend implementations for now.
+  - Commit: [ui(mobile_landing_page): created landing page for mobile.]
+
+- [x] Created Profile Page without backend impementations for now.
+  - Commit: [ui(mobile_profile_page)]
+
+ui(mobile_landing_page): created landing page for mobile.
 
 ## 🔄 IN-PROGRESS Tasks
   #Mobile
-  - Create Register screen
-  - Create Login screen
+  - Implement JWT Token Usage
+  
+ 
 
 
 ## 📋 TODO Tasks
 
-  #Mobile
-  
-  - Create Dashboard/Profile screen (protected)
-  - Implement logout functionality
-  - Connect mobile app to Spring Boot backend API
-  - Implement JWT token storage/session handling
-  - Implement protected routing/navigation
-  - Implement form validation
-  - Handle API error responses
-  - UI layout polishing
+  ##Mobile
+  - Backend implementations on Landing
+  - Edit profile backend implementations
+  - Implement Logout
+  - Create Protected Routing
 
 
 
-### Web Application Features
 
-
-### Documentation
-- [x] Update FRS PDF with:
-  - [x] ERD diagram
-  - [x] UML diagrams (from previous activity)
-  - [x] Web UI screenshots:
-    - [x] Login page 
-    - [x] Register page 
-    - [x] Dashboard/Profile page 
-    - [x] Logout functionality 
 
 
 
