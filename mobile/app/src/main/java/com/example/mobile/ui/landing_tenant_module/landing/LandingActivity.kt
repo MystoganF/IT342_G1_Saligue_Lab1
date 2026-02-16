@@ -1,4 +1,4 @@
-package com.example.mobile.ui.landing_module.landing
+package com.example.mobile.ui.landing_tenant_module.landing
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,6 +9,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mobile.R
 import com.example.mobile.ui.login_module.login.LoginActivity
+import com.example.mobile.ui.landing_tenant_module.landing.LandingActivity
+import com.example.mobile.ui.landing_tenant_module.profile.ProfileActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class LandingActivity : AppCompatActivity() {
@@ -60,7 +62,7 @@ class LandingActivity : AppCompatActivity() {
 
                 R.id.nav_profile -> {
                     Toast.makeText(this, "Login to view profile", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, LandingActivity::class.java))
+                    startActivity(Intent(this, ProfileActivity::class.java))
                     true
                 }
 

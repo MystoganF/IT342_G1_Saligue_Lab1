@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.mobile.R
 import com.example.mobile.ui.login_module.register.RegisterActivity
-import com.example.mobile.ui.landing_module.landing.LandingActivity
+import com.example.mobile.ui.landing_tenant_module.landing.LandingActivity
 
 
 class LoginActivity : AppCompatActivity() {
