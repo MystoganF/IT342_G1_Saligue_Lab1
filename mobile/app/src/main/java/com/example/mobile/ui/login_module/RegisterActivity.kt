@@ -11,102 +11,76 @@ import com.example.mobile.R
 
 class RegisterActivity : AppCompatActivity() {
 
-    private lateinit var etUsername: EditText
-    private lateinit var etEmail: EditText
-    private lateinit var etPhone: EditText
-    private lateinit var etPassword: EditText
-    private lateinit var etConfirmPassword: EditText
-    private lateinit var btnRegister: Button
-    private lateinit var tvLogin: TextView
+    private lateinit var inputUsername: EditText
+    private lateinit var inputEmail: EditText
+    private lateinit var inputPhone: EditText
+    private lateinit var inputPassword: EditText
+    private lateinit var inputConfirmPassword: EditText
+    private lateinit var buttonRegister: Button
+    private lateinit var textLoginRedirect: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
+        inputUsername = findViewById(R.id.inputUsername)
+        inputEmail = findViewById(R.id.inputEmail)
+        inputPhone = findViewById(R.id.inputPhone)
+        inputPassword = findViewById(R.id.inputPassword)
+        inputConfirmPassword = findViewById(R.id.inputConfirmPassword)
+        buttonRegister = findViewById(R.id.buttonRegister)
+        textLoginRedirect = findViewById(R.id.textLoginRedirect)
 
-        etUsername = findViewById(R.id.etUsername)
-        etEmail = findViewById(R.id.etEmail)
-        etPhone = findViewById(R.id.etPhone)
-        etPassword = findViewById(R.id.etPassword)
-        etConfirmPassword = findViewById(R.id.etConfirmPassword)
-        btnRegister = findViewById(R.id.btnRegister)
-        tvLogin = findViewById(R.id.tvLogin)
-
-        // Register button click
-        btnRegister.setOnClickListener {
+        buttonRegister.setOnClickListener {
             if (validateForm()) {
-                // TEMP: Show success message (replace later with API call)
-                btnRegister.text = "ACCOUNT CREATED ✓"
-                btnRegister.isEnabled = false
+                buttonRegister.text = "ACCOUNT CREATED ✓"
+                buttonRegister.isEnabled = false
             }
         }
 
-        // Go to Login screen
-        tvLogin.setOnClickListener {
+        textLoginRedirect.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
     }
 
     private fun validateForm(): Boolean {
-
         var isValid = true
 
-        val username = etUsername.text.toString().trim()
-        val email = etEmail.text.toString().trim()
-        val phone = etPhone.text.toString().replace("\\D".toRegex(), "")
-        val password = etPassword.text.toString()
-        val confirmPassword = etConfirmPassword.text.toString()
+        val username = inputUsername.text.toString().trim()
+        val email = inputEmail.text.toString().trim()
+        val phone = inputPhone.text.toString().replace("\\D".toRegex(), "")
+        val password = inputPassword.text.toString()
+        val confirmPassword = inputConfirmPassword.text.toString()
 
-        // Clear previous errors
-        etUsername.error = null
-        etEmail.error = null
-        etPhone.error = null
-        etPassword.error = null
-        etConfirmPassword.error = null
+        inputUsername.error = null
+        inputEmail.error = null
+        inputPhone.error = null
+        inputPassword.error = null
+        inputConfirmPassword.error = null
 
-        // Username validation
-        if (username.isEmpty()) {
-            etUsername.error = "Username is required"
-            isValid = false
-        } else if (username.length < 3) {
-            etUsername.error = "Username must be at least 3 characters"
+        if (username.length < 3) {
+            inputUsername.error = "Username must be at least 3 characters"
             isValid = false
         }
 
-        // Email validation
-        if (email.isEmpty()) {
-            etEmail.error = "Email is required"
-            isValid = false
-        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            etEmail.error = "Please enter a valid email"
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            inputEmail.error = "Enter a valid email"
             isValid = false
         }
 
-        // Phone validation
-        if (phone.isEmpty()) {
-            etPhone.error = "Phone number is required"
-            isValid = false
-        } else if (phone.length < 10 || phone.length > 15) {
-            etPhone.error = "Invalid phone number"
+        if (phone.length !in 10..15) {
+            inputPhone.error = "Invalid phone number"
             isValid = false
         }
 
-        // Password validation
-        if (password.isEmpty()) {
-            etPassword.error = "Password is required"
-            isValid = false
-        } else if (password.length < 6) {
-            etPassword.error = "Password must be at least 6 characters"
+        if (password.length < 6) {
+            inputPassword.error = "Password must be at least 6 characters"
             isValid = false
         }
 
-        // Confirm password
-        if (confirmPassword.isEmpty()) {
-            etConfirmPassword.error = "Please confirm password"
-            isValid = false
-        } else if (password != confirmPassword) {
-            etConfirmPassword.error = "Passwords do not match"
+        if (password != confirmPassword) {
+            inputConfirmPassword.error = "Passwords do not match"
             isValid = false
         }
 

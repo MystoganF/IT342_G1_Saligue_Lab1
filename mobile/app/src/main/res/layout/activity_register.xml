@@ -74,41 +74,41 @@
 
                 <!-- Username -->
                 <EditText
-                    android:id="@+id/etUsername"
+                    android:id="@+id/inputUsername"
                     android:hint="Username"
                     style="@style/AuthInput"/>
 
                 <!-- Email -->
                 <EditText
-                    android:id="@+id/etEmail"
+                    android:id="@+id/inputEmail"
                     android:hint="Email"
                     android:inputType="textEmailAddress"
                     style="@style/AuthInput"/>
 
                 <!-- Phone -->
                 <EditText
-                    android:id="@+id/etPhone"
+                    android:id="@+id/inputPhone"
                     android:hint="Phone Number"
                     android:inputType="phone"
                     style="@style/AuthInput"/>
 
                 <!-- Password -->
                 <EditText
-                    android:id="@+id/etPassword"
+                    android:id="@+id/inputPassword"
                     android:hint="Password"
                     android:inputType="textPassword"
                     style="@style/AuthInput"/>
 
                 <!-- Confirm Password -->
                 <EditText
-                    android:id="@+id/etConfirmPassword"
+                    android:id="@+id/inputConfirmPassword"
                     android:hint="Confirm Password"
                     android:inputType="textPassword"
                     style="@style/AuthInput"/>
 
                 <!-- Register Button -->
                 <Button
-                    android:id="@+id/btnRegister"
+                    android:id="@+id/buttonRegister"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="REGISTER"
@@ -119,13 +119,14 @@
 
                 <!-- Login Redirect -->
                 <TextView
-                    android:id="@+id/tvLogin"
+                    android:id="@+id/textLoginRedirect"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Already have an account? Login"
                     android:textColor="#3B82F6"
                     android:gravity="center"
                     android:layout_marginTop="20dp"/>
+
 
             </LinearLayout>
 
