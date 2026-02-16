@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0A0A0A">
+
+    <!-- Scrollable content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <!-- LOGO -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="32dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:gravity="center"
+                    android:text="CL"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:background="@drawable/bg_logo"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Kean"
+                    android:textColor="#FFFFFF"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="16dp"/>
+            </LinearLayout>
+
+            <!-- TITLE -->
+            <TextView
+                android:text="Join Us..."
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="6dp"/>
+
+            <TextView
+                android:text="Create your account and start your journey with us."
+                android:textColor="#A0AEC0"
+                android:layout_marginBottom="28dp"/>
+
+            <!-- FORM CONTAINER -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_form_card"
+                android:padding="20dp">
+
+                <!-- Username -->
+                <EditText
+                    android:id="@+id/etUsername"
+                    android:hint="Username"
+                    style="@style/AuthInput"/>
+
+                <!-- Email -->
+                <EditText
+                    android:id="@+id/etEmail"
+                    android:hint="Email"
+                    android:inputType="textEmailAddress"
+                    style="@style/AuthInput"/>
+
+                <!-- Phone -->
+                <EditText
+                    android:id="@+id/etPhone"
+                    android:hint="Phone Number"
+                    android:inputType="phone"
+                    style="@style/AuthInput"/>
+
+                <!-- Password -->
+                <EditText
+                    android:id="@+id/etPassword"
+                    android:hint="Password"
+                    android:inputType="textPassword"
+                    style="@style/AuthInput"/>
+
+                <!-- Confirm Password -->
+                <EditText
+                    android:id="@+id/etConfirmPassword"
+                    android:hint="Confirm Password"
+                    android:inputType="textPassword"
+                    style="@style/AuthInput"/>
+
+                <!-- Register Button -->
+                <Button
+                    android:id="@+id/btnRegister"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="REGISTER"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_button"/>
+
+                <!-- Login Redirect -->
+                <TextView
+                    android:id="@+id/tvLogin"
+                    android:text="Already have an account? Login"
+                    android:textColor="#3B82F6"
+                    android:gravity="center"
+                    android:layout_marginTop="20dp"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>
