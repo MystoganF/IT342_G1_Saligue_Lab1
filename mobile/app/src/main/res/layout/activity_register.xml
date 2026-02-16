@@ -48,13 +48,18 @@
 
             <!-- TITLE -->
             <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="Join Us..."
                 android:textSize="28sp"
                 android:textStyle="bold"
                 android:textColor="#FFFFFF"
                 android:layout_marginBottom="6dp"/>
 
+
             <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="Create your account and start your journey with us."
                 android:textColor="#A0AEC0"
                 android:layout_marginBottom="28dp"/>
@@ -115,10 +120,13 @@
                 <!-- Login Redirect -->
                 <TextView
                     android:id="@+id/tvLogin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:text="Already have an account? Login"
                     android:textColor="#3B82F6"
                     android:gravity="center"
                     android:layout_marginTop="20dp"/>
+
             </LinearLayout>
 
         </LinearLayout>
