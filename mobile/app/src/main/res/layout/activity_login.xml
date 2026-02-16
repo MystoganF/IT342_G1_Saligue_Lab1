@@ -77,6 +77,17 @@
                 android:inputType="textPassword"
                 style="@style/AuthInput"/>
 
+            <Button
+                android:id="@+id/loginButton"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="LOGIN"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/bg_button"/>
+
+
             <TextView
                 android:id="@+id/messageText"
                 android:layout_width="match_parent"

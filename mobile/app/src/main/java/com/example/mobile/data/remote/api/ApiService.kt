@@ -1,6 +1,8 @@
 package com.example.mobile.data.remote.api
 import MessageResponse
 import RegisterRequest
+import com.example.mobile.data.model.request.LoginRequest
+import com.example.mobile.data.model.response.LoginResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -11,4 +13,10 @@ interface ApiService {
     suspend fun register(
         @Body request: RegisterRequest
     ): Response<MessageResponse>
+
+    @POST("api/auth/login")
+    suspend fun login(
+        @Body request: LoginRequest
+    ): Response<LoginResponse>
+
 }
