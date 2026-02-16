@@ -30,7 +30,7 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:gravity="center"
-                    android:text="CL"
+                    android:text="CN"
                     android:textColor="#FFFFFF"
                     android:textStyle="bold"
                     android:textSize="20sp"
@@ -39,7 +39,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Kean"
+                    android:text="CebuNest"
                     android:textColor="#FFFFFF"
                     android:textSize="26sp"
                     android:textStyle="bold"

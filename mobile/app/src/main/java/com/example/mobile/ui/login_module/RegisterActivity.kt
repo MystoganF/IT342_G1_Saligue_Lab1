@@ -1,4 +1,4 @@
-package com.example.g1.ui.register
+package com.example.mobile.ui.login_module
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,7 +8,6 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mobile.R
-import com.example.mobile.ui.login.LoginActivity
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -24,7 +23,7 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        // Bind views
+
         etUsername = findViewById(R.id.etUsername)
         etEmail = findViewById(R.id.etEmail)
         etPhone = findViewById(R.id.etPhone)
