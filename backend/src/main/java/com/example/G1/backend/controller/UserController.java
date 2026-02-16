@@ -28,12 +28,12 @@ public class UserController {
     private final JwtService jwtService;
     private final AuthService authService;
 
-    @GetMapping("/me")
-    public ResponseEntity<Map<String, Object>> getMyProfile(
-            @RequestHeader("Authorization") String authHeader) {
-        System.out.println(">>> /api/users/me HIT");       
-        return ResponseEntity.ok(userService.getCurrentUserProfile(authHeader));
-    }
+//    @GetMapping("/me")
+//    public ResponseEntity<Map<String, Object>> getMyProfile(
+//            @RequestHeader("Authorization") String authHeader) {
+//        System.out.println(">>> /api/users/me HIT");
+//        return ResponseEntity.ok(userService.getCurrentUserProfile(authHeader));
+//    }
 
     @PutMapping("/me")
     public ResponseEntity<?> updateProfile(
@@ -66,8 +66,7 @@ public class UserController {
             @RequestHeader("Authorization") String authHeader) {
 
         String token = authHeader.replace("Bearer ", "");
-
-        User user = authService.getAuthenticatedUser(token);
+        User user = userService.getAuthenticatedUser(token);
 
         return ResponseEntity.ok(Map.of(
                 "username", user.getUsername(),
