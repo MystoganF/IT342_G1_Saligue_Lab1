@@ -1,0 +1,33 @@
+package com.example.mobile.data.repository
+
+import RegisterRequest
+import com.example.mobile.data.remote.network.RetrofitInstance
+
+class AuthRepository {
+
+    suspend fun register(
+        username: String,
+        email: String,
+        phone: String,
+        password: String
+    ): Result<String> {
+
+        return try {
+
+            val response = RetrofitInstance.api.register(
+                RegisterRequest(username, email, phone, password)
+            )
+
+            if (response.isSuccessful) {
+                Result.success(response.body()?.message ?: "Registered successfully")
+            } else {
+                Result.failure(
+                    Exception(response.errorBody()?.string() ?: "Registration failed")
+                )
+            }
+
+        } catch (e: Exception) {
+            Result.failure(Exception("Cannot connect to server"))
+        }
+    }
+}

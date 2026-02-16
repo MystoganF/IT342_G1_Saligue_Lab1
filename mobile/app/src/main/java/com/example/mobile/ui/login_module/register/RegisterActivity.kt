@@ -1,4 +1,3 @@
-```kotlin
 package com.example.mobile.ui.login_module.register
 
 import android.content.Intent
@@ -8,11 +7,13 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.viewModels
+import androidx.lifecycle.ViewModelProvider
+
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.mobile.R
 import com.example.mobile.ui.login_module.login.LoginActivity
+
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -24,11 +25,14 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var buttonRegister: Button
     private lateinit var textLoginRedirect: TextView
 
-    private val viewModel: RegisterViewModel by viewModels()
+    private lateinit var viewModel: RegisterViewModel
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
+
+        viewModel = ViewModelProvider(this)[RegisterViewModel::class.java]
 
         // Bind Views
         inputUsername = findViewById(R.id.inputUsername)
@@ -135,4 +139,4 @@ class RegisterActivity : AppCompatActivity() {
         return isValid
     }
 }
-```
+

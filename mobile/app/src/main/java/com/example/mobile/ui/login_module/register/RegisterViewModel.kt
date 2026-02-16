@@ -1,29 +1,36 @@
-import androidx.lifecycle.*
+
+package com.example.mobile.ui.login_module.register
+
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.mobile.data.repository.AuthRepository
 import kotlinx.coroutines.launch
 
 class RegisterViewModel : ViewModel() {
 
-    private val _result = MutableLiveData<String>()
-    val result: LiveData<String> = _result
+    private val repository = AuthRepository()
+
+    private val _registerState = MutableLiveData<RegisterState>()
+    val registerState: LiveData<RegisterState> = _registerState
 
     fun register(username: String, email: String, phone: String, password: String) {
 
+        _registerState.value = RegisterState.Loading
+
         viewModelScope.launch {
-            try {
-                val response = RetrofitInstance.api.register(
-                    RegisterRequest(username, email, phone, password)
-                )
 
-                if (response.isSuccessful) {
-                    _result.value = response.body()?.message ?: "Registered!"
-                } else {
-                    val error = response.errorBody()?.string()
-                    _result.value = error ?: "Registration failed"
-                }
+            val result = repository.register(username, email, phone, password)
 
-            } catch (e: Exception) {
-                _result.value = "Cannot connect to server"
+            result.onSuccess {
+                _registerState.value = RegisterState.Success(it)
+            }
+
+            result.onFailure {
+                _registerState.value = RegisterState.Error(it.message ?: "Unknown error")
             }
         }
     }
 }
+

@@ -1,3 +1,5 @@
+package com.example.mobile.data.remote.network
+import com.example.mobile.data.remote.api.ApiService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
