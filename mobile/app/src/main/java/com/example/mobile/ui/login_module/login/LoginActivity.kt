@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.mobile.R
 import com.example.mobile.ui.login_module.register.RegisterActivity
+import com.example.mobile.ui.landing_module.landing.LandingActivity
+
 
 class LoginActivity : AppCompatActivity() {
 
@@ -56,7 +58,9 @@ class LoginActivity : AppCompatActivity() {
                 is LoginState.Success -> {
                     Toast.makeText(this, "Login Success", Toast.LENGTH_SHORT).show()
 
-                    // TODO save token (next step)
+                    val intent = Intent(this, LandingActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
                 }
 
                 is LoginState.Error -> {

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0A0A0A">
+
+    <!-- TOP BAR -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="#0A0A0A"
+        android:title="CebuNest"
+        android:titleTextColor="#FFFFFF"
+        app:navigationIcon="@drawable/ic_profile" />
+
+    <!-- CONTENT -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- HERO CARD -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp"
+                android:background="@drawable/bg_form_card">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Welcome to CebuNest"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="A centralized rental management platform that helps property owners in Cebu list accommodations, manage tenants, and simplify the renting process — all in one place."
+                    android:textColor="#A0AEC0"
+                    android:layout_marginTop="8dp"/>
+
+                <Button
+                    android:id="@+id/getStartedBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Explore Features"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_button"
+                    android:textColor="#FFFFFF"/>
+            </LinearLayout>
+
+            <!-- SECTION TITLE -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="What You Can Do With CebuNest"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="28dp"
+                android:layout_marginBottom="12dp"/>
+
+            <!-- FEATURE CARDS -->
+            <include
+                android:id="@+id/feature1"
+                layout="@layout/item_feature"/>
+
+            <include
+                android:id="@+id/feature2"
+                layout="@layout/item_feature"/>
+
+            <include
+                android:id="@+id/feature3"
+                layout="@layout/item_feature"/>
+
+            <include
+                android:id="@+id/feature4"
+                layout="@layout/item_feature"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- BOTTOM NAV -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="#0A0A0A"
+        app:itemIconTint="@color/nav_selector"
+        app:itemTextColor="@color/nav_selector"
+        app:menu="@menu/menu_bottom_nav"/>
+
+</LinearLayout>

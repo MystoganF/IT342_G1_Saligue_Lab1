@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_form_card">
+
+    <ImageView
+        android:id="@+id/featureIcon"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_gravity="top"
+        android:src="@drawable/ic_product"
+        android:layout_marginEnd="12dp"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/featureTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Feature Title"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/featureDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Feature description goes here"
+            android:textColor="#A0AEC0"
+            android:textSize="13sp"
+            android:layout_marginTop="2dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>
