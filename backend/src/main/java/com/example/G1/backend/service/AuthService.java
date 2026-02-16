@@ -75,22 +75,7 @@ public class AuthService {
 }
 
 
-    @GetMapping("/me")
-    public ResponseEntity<?> getMyProfile(
-        @RequestHeader("Authorization") String authHeader) {
 
-    String token = authHeader.replace("Bearer ", "");
-    String username = jwtService.extractUsername(token);
-
-    User user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new RuntimeException("User not found"));
-
-    return ResponseEntity.ok(Map.of(
-            "username", user.getUsername(),
-            "email", user.getEmail(),
-            "phoneNumber", user.getPhoneNumber()
-     ));
-    }
 
      
 }

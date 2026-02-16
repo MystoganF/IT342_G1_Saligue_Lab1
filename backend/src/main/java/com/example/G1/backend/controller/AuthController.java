@@ -2,6 +2,8 @@ package com.example.G1.backend.controller;
 
 import java.util.Map;
 
+import com.example.G1.backend.entity.User;
+import com.example.G1.backend.security.JwtService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,11 +12,13 @@ import com.example.G1.backend.dto.RegisterRequest;
 import com.example.G1.backend.service.AuthService;
 
 
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthService authService;
+
 
     public AuthController(AuthService authService) {
         this.authService = authService;
@@ -51,6 +55,9 @@ public class AuthController {
             return ResponseEntity.status(401).body(Map.of("error", e.getMessage()));
         }
     }
+
+
+
 
     
 }

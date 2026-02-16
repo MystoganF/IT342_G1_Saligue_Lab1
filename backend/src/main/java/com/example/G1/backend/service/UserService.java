@@ -59,9 +59,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-
-
-
     public void changePassword(String authHeader, String oldPassword, String newPassword) {
         String token = authHeader.replace("Bearer ", "");
         String username = jwtService.extractUsername(token);
@@ -78,4 +75,11 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
+
+    public User getAuthenticatedUser(String token) {
+        String username = jwtService.extractUsername(token);
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
 }

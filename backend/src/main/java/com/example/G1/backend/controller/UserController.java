@@ -1,5 +1,9 @@
 package com.example.G1.backend.controller;
 import java.util.Map;
+
+import com.example.G1.backend.entity.User;
+import com.example.G1.backend.security.JwtService;
+import com.example.G1.backend.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,6 +25,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class UserController {
 
     private final UserService userService;
+    private final JwtService jwtService;
+    private final AuthService authService;
 
     @GetMapping("/me")
     public ResponseEntity<Map<String, Object>> getMyProfile(
@@ -53,6 +59,21 @@ public class UserController {
 
         userService.changePassword(authHeader, request.getOldPassword(), request.getNewPassword());
         return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getMyProfile(
+            @RequestHeader("Authorization") String authHeader) {
+
+        String token = authHeader.replace("Bearer ", "");
+
+        User user = authService.getAuthenticatedUser(token);
+
+        return ResponseEntity.ok(Map.of(
+                "username", user.getUsername(),
+                "email", user.getEmail(),
+                "phoneNumber", user.getPhoneNumber()
+        ));
     }
 }
 
