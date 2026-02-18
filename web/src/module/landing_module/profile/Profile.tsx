@@ -127,24 +127,26 @@ const ProfilePage: React.FC = () => {
           phoneNumber: tempProfile.phone,
         }),
       });
+
       if (!response.ok) throw new Error('Failed to update profile');
 
       setProfile({ ...tempProfile });
       setIsEditing(false);
 
-      // Show success overlay and logout
-      setSuccessMessage('Profile updated successfully! Logging you out to apply changes...');
+      setSuccessMessage('Profile updated successfully!');
       setShowSuccess(true);
+
       setTimeout(() => {
-        localStorage.removeItem('token');
-        navigate('/login');
+        window.location.reload();
       }, 3000);
+
     } catch (error) {
       console.error('Error updating profile:', error);
       alert(error instanceof Error ? error.message : 'Failed to update profile.');
       setTempProfile({ ...profile });
     }
   };
+
 
   // Handlers for changing password
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
