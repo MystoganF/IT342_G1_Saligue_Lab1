@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer
 import com.example.mobile.R
 import com.example.mobile.ui.login_module.register.RegisterActivity
 import com.example.mobile.ui.landing_tenant_module.landing.LandingActivity
+import com.example.mobile.utils.SessionManager
 
 
 class LoginActivity : AppCompatActivity() {
@@ -22,6 +23,14 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val session = SessionManager(this)
+        if (session.isLoggedIn()) {
+            startActivity(Intent(this, LandingActivity::class.java))
+            finish()
+            return
+        }
+
         setContentView(R.layout.activity_login)
 
         username = findViewById(R.id.usernameInput)
@@ -58,10 +67,14 @@ class LoginActivity : AppCompatActivity() {
                 is LoginState.Success -> {
                     Toast.makeText(this, "Login Success", Toast.LENGTH_SHORT).show()
 
+                    val session = SessionManager(this)
+                    session.saveToken(state.token)   // ⭐ STORE TOKEN
+
                     val intent = Intent(this, LandingActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)
                 }
+
 
                 is LoginState.Error -> {
                     loginBtn.isEnabled = true

@@ -1,12 +1,13 @@
 package com.example.mobile.ui.login_module.login
 
+import android.app.Application
 import androidx.lifecycle.*
 import com.example.mobile.data.repository.AuthRepository
 import kotlinx.coroutines.launch
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository = AuthRepository()
+    private val repository = AuthRepository(application.applicationContext)
 
     private val _loginState = MutableLiveData<LoginState>(LoginState.Idle)
     val loginState: LiveData<LoginState> = _loginState

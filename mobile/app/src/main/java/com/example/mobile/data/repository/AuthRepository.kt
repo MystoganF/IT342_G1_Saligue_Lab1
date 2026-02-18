@@ -1,11 +1,14 @@
 package com.example.mobile.data.repository
 
+import android.content.Context
 import RegisterRequest
 import com.example.mobile.data.model.request.LoginRequest
 import com.example.mobile.data.model.response.LoginResponse
 import com.example.mobile.data.remote.network.RetrofitInstance
 
-class AuthRepository {
+class AuthRepository(context: Context) {
+
+    private val api = RetrofitInstance.create(context)
 
     suspend fun register(
         username: String,
@@ -16,7 +19,7 @@ class AuthRepository {
 
         return try {
 
-            val response = RetrofitInstance.api.register(
+            val response = api.register(
                 RegisterRequest(username, email, phone, password)
             )
 
@@ -40,9 +43,7 @@ class AuthRepository {
 
         return try {
 
-            val response = RetrofitInstance.api.login(
-                LoginRequest(username, password)
-            )
+            val response = api.login(LoginRequest(username, password))
 
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!)
@@ -54,5 +55,4 @@ class AuthRepository {
             Result.failure(Exception("Cannot connect to server"))
         }
     }
-
 }

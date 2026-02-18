@@ -11,6 +11,7 @@ import com.example.mobile.R
 import com.example.mobile.ui.login_module.login.LoginActivity
 import com.example.mobile.ui.landing_tenant_module.landing.LandingActivity
 import com.example.mobile.ui.landing_tenant_module.profile.ProfileActivity
+import com.example.mobile.utils.SessionManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class LandingActivity : AppCompatActivity() {
@@ -20,6 +21,15 @@ class LandingActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val session = SessionManager(this)
+
+        if (!session.isLoggedIn()) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
+
         setContentView(R.layout.activity_landing)
 
         getStartedBtn = findViewById(R.id.getStartedBtn)

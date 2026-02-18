@@ -1,4 +1,6 @@
 package com.example.mobile.data.remote.network
+
+import android.content.Context
 import com.example.mobile.data.remote.api.ApiService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -9,16 +11,19 @@ object RetrofitInstance {
 
     private const val BASE_URL = "http://10.0.2.2:8080/"
 
-    private val logging = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
-    }
+    fun create(context: Context): ApiService {
 
-    private val client = OkHttpClient.Builder()
-        .addInterceptor(logging)
-        .build()
+        val logging = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
 
-    val api: ApiService by lazy {
-        Retrofit.Builder()
+        val client = OkHttpClient.Builder()
+            .addInterceptor(AuthInterceptor(context))
+            .addInterceptor(UnauthorizedInterceptor(context))
+            .addInterceptor(logging)
+            .build()
+
+        return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
