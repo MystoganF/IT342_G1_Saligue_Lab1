@@ -110,34 +110,81 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:visibility="gone">
+                    android:visibility="gone"
+                    android:paddingTop="10dp">
+
+                    <!-- OLD PASSWORD -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Current Password"
+                        android:textColor="#B0BEC5"
+                        android:textSize="13sp"
+                        android:layout_marginTop="10dp"/>
 
                     <EditText
                         android:id="@+id/oldPassword"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Old Password"
-                        android:inputType="textPassword"/>
+                        android:hint="Enter your current password"
+                        android:textColor="#FFFFFF"
+                        android:textColorHint="#777"
+                        android:inputType="textPassword"
+                        android:background="@drawable/bg_input"/>
+
+                    <!-- NEW PASSWORD -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="New Password"
+                        android:textColor="#B0BEC5"
+                        android:textSize="13sp"
+                        android:layout_marginTop="16dp"/>
 
                     <EditText
                         android:id="@+id/newPassword"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="New Password"
-                        android:inputType="textPassword"/>
+                        android:hint="Enter new password"
+                        android:textColor="#FFFFFF"
+                        android:textColorHint="#777"
+                        android:inputType="textPassword"
+                        android:background="@drawable/bg_input"/>
+
+                    <!-- CONFIRM PASSWORD -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Confirm New Password"
+                        android:textColor="#B0BEC5"
+                        android:textSize="13sp"
+                        android:layout_marginTop="16dp"/>
 
                     <EditText
                         android:id="@+id/confirmPassword"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Confirm Password"
-                        android:inputType="textPassword"/>
+                        android:hint="Re-enter new password"
+                        android:textColor="#FFFFFF"
+                        android:textColorHint="#777"
+                        android:inputType="textPassword"
+                        android:background="@drawable/bg_input"/>
+
+                    <!-- PASSWORD RULES -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Password must be at least 6 characters"
+                        android:textColor="#8A8A8A"
+                        android:textSize="12sp"
+                        android:layout_marginTop="6dp"/>
 
                     <Button
                         android:id="@+id/updatePasswordBtn"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Update Password"
+                        android:layout_marginTop="18dp"
                         android:background="@drawable/bg_button"
                         android:textColor="#FFF"/>
                 </LinearLayout>
