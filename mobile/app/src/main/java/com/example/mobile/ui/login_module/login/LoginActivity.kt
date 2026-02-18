@@ -68,7 +68,7 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this, "Login Success", Toast.LENGTH_SHORT).show()
 
                     val session = SessionManager(this)
-                    session.saveToken(state.token)   // ⭐ STORE TOKEN
+                    session.saveSession(state.token, state.username)   // ⭐ STORE TOKEN
 
                     val intent = Intent(this, LandingActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

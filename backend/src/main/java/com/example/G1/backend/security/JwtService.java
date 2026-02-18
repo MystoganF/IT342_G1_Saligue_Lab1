@@ -17,32 +17,42 @@ public class JwtService {
         return Keys.hmacShaKeyFor(SECRET.getBytes());
     }
 
-    public String generateToken(String username) {
+
+
+    public String generateToken(Long userId) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(String.valueOf(userId))
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public String extractUsername(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+
+
+    public Long extractUserId(String token) {
+        return Long.parseLong(
+                Jwts.parserBuilder()
+                        .setSigningKey(getSigningKey())
+                        .build()
+                        .parseClaimsJws(token)
+                        .getBody()
+                        .getSubject()
+        );
     }
 
-    public boolean isTokenValid(String token, String username) {
+
+
+    public boolean isTokenValid(String token, Long userId) {
         try {
-            String extractedUsername = extractUsername(token);
-            return extractedUsername.equals(username) && !isTokenExpired(token);
-        } catch (JwtException e) {
+            Long extractedId = extractUserId(token);
+            return extractedId.equals(userId) && !isTokenExpired(token);
+        } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
+
+
 
     private boolean isTokenExpired(String token) {
         Date expiration = Jwts.parserBuilder()
@@ -51,8 +61,7 @@ public class JwtService {
                 .parseClaimsJws(token)
                 .getBody()
                 .getExpiration();
+
         return expiration.before(new Date());
     }
-
-    
 }

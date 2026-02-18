@@ -16,7 +16,7 @@ class UnauthorizedInterceptor(private val context: Context) : Interceptor {
         if (response.code == 401) {
 
             val session = SessionManager(context)
-            session.clear()
+            session.logout()
 
             val intent = Intent(context, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

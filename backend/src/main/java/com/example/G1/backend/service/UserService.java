@@ -1,9 +1,11 @@
 package com.example.G1.backend.service;
+
 import java.util.Map;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
+
 import com.example.G1.backend.entity.User;
 import com.example.G1.backend.repository.UserRepository;
 import com.example.G1.backend.security.JwtService;
@@ -18,13 +20,15 @@ public class UserService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
 
-    
+
+    /* ---------------- GET PROFILE ---------------- */
 
     public Map<String, Object> getCurrentUserProfile(String authHeader) {
-        String token = authHeader.replace("Bearer ", "");
-        String username = jwtService.extractUsername(token);
 
-        User user = userRepository.findByUsername(username)
+        String token = authHeader.replace("Bearer ", "");
+        Long userId = jwtService.extractUserId(token);
+
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy HH:mm");
@@ -40,15 +44,17 @@ public class UserService {
     }
 
 
+    /* ---------------- UPDATE PROFILE ---------------- */
 
     public void updateProfile(String authHeader, String username, String email, String phoneNumber) {
-        String token = authHeader.replace("Bearer ", "");
-        String currentUsername = jwtService.extractUsername(token);
 
-        User user = userRepository.findByUsername(currentUsername)
+        String token = authHeader.replace("Bearer ", "");
+        Long userId = jwtService.extractUserId(token);
+
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Only check if username is different
+        // Prevent duplicate username
         if (!user.getUsername().equals(username) && userRepository.existsByUsername(username)) {
             throw new RuntimeException("Username already taken");
         }
@@ -56,14 +62,19 @@ public class UserService {
         user.setUsername(username);
         user.setEmail(email);
         user.setPhoneNumber(phoneNumber);
+
         userRepository.save(user);
     }
 
-    public void changePassword(String authHeader, String oldPassword, String newPassword) {
-        String token = authHeader.replace("Bearer ", "");
-        String username = jwtService.extractUsername(token);
 
-        User user = userRepository.findByUsername(username)
+    /* ---------------- CHANGE PASSWORD ---------------- */
+
+    public void changePassword(String authHeader, String oldPassword, String newPassword) {
+
+        String token = authHeader.replace("Bearer ", "");
+        Long userId = jwtService.extractUserId(token);
+
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Verify old password
@@ -71,15 +82,19 @@ public class UserService {
             throw new RuntimeException("Old password is incorrect");
         }
 
-        // Encode new password
+        // Save new password
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
 
+
+    /* ---------------- GET AUTHENTICATED USER ---------------- */
+
     public User getAuthenticatedUser(String token) {
-        String username = jwtService.extractUsername(token);
-        return userRepository.findByUsername(username)
+
+        Long userId = jwtService.extractUserId(token);
+
+        return userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
-
 }

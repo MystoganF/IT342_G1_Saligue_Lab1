@@ -58,9 +58,17 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
 
                 if (response.isSuccessful) {
                     _message.value = "Profile updated successfully"
-                    loadProfile() // refresh UI
+                    loadProfile()
                 } else {
-                    _message.value = "Update failed (${response.code()})"
+
+                    // 🔥 GET REAL BACKEND ERROR
+                    val errorText = response.errorBody()?.string()
+
+                    _message.value =
+                        if (!errorText.isNullOrBlank())
+                            "Update failed (${response.code()}): $errorText"
+                        else
+                            "Update failed (${response.code()})"
                 }
 
             } catch (e: Exception) {
@@ -70,6 +78,7 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
             _loading.value = false
         }
     }
+
 
 
     /* ---------------- CHANGE PASSWORD ---------------- */
@@ -85,7 +94,13 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                 if (response.isSuccessful) {
                     _message.value = "Password changed successfully"
                 } else {
-                    _message.value = "Wrong old password or unauthorized"
+                    val errorText = response.errorBody()?.string()
+
+                    _message.value =
+                        if (!errorText.isNullOrBlank())
+                            "Password change failed (${response.code()}): $errorText"
+                        else
+                            "Wrong old password or unauthorized"
                 }
 
             } catch (e: Exception) {
@@ -95,4 +110,5 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
             _loading.value = false
         }
     }
+
 }

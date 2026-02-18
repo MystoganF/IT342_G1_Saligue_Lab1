@@ -8,26 +8,23 @@ class SessionManager(context: Context) {
 
     companion object {
         private const val USER_TOKEN = "user_token"
+        private const val USERNAME = "username"
     }
 
-    fun saveToken(token: String) {
-        prefs.edit().putString(USER_TOKEN, token).apply()
+    fun saveSession(token: String, username: String) {
+        prefs.edit()
+            .putString(USER_TOKEN, token)
+            .putString(USERNAME, username)
+            .apply()
     }
 
-    fun fetchToken(): String? {
-        return prefs.getString(USER_TOKEN, null)
-    }
+    fun fetchToken(): String? = prefs.getString(USER_TOKEN, null)
 
-    fun isLoggedIn(): Boolean {
-        return fetchToken() != null
-    }
+    fun fetchUsername(): String? = prefs.getString(USERNAME, null)
 
-    fun clear() {
-        prefs.edit().clear().apply()
-    }
+    fun isLoggedIn(): Boolean = fetchToken() != null
 
     fun logout() {
         prefs.edit().clear().apply()
     }
-
 }

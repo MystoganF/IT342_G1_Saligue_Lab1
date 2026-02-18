@@ -7,6 +7,7 @@ import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mobile.R
+import com.example.mobile.ui.landing_tenant_module.landing.LandingActivity
 import com.example.mobile.ui.login_module.login.LoginActivity
 import com.example.mobile.utils.SessionManager
 import com.google.android.material.appbar.MaterialToolbar
@@ -36,7 +37,17 @@ class ProfileActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val session = SessionManager(this)
+        if (!session.isLoggedIn()) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
+
+
         setContentView(R.layout.activity_profile)
+
+
 
         bindViews()
         observeViewModel()
