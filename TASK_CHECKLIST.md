@@ -82,7 +82,7 @@
   - [x] Implement input validation
     - Commit: [feat: add login page UI with dark theme]
 
-
+#Mobile
 - [x] Initialize Android Kotlin project 
   - Commit: [feat(mobile): intial setup]
 
@@ -98,12 +98,20 @@
 - [x] Created Profile Page without backend impementations for now.
   - Commit: [ui(mobile_profile_page)]
 
+- [x] Implement JWT Token Usage and Protected Pages on Mobile
+  - Commit: [feat(mobile_protected_routing): added protection page feature to landing]
+
+- [x] Edit profile backend implementations
+  - Commit: [feat(mobile_update_profile): added profile update feature]
+
+- [x] Implement Logout
+  - Commit: [feat(mobile_logout): added end session feature]
+
+
 ui(mobile_landing_page): created landing page for mobile.
 
 ## 🔄 IN-PROGRESS Tasks
-  #Mobile
-  - Implement JWT Token Usage
-  
+
  
 
 
@@ -111,9 +119,7 @@ ui(mobile_landing_page): created landing page for mobile.
 
   ##Mobile
   - Backend implementations on Landing
-  - Edit profile backend implementations
-  - Implement Logout
-  - Create Protected Routing
+  
 
 
 
