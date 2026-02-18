@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.mobile.R
 import com.example.mobile.ui.login_module.login.LoginActivity
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.example.mobile.utils.SessionManager
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -86,17 +88,36 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     // 🚪 LOGOUT
+    // 🚪 LOGOUT
     private fun setupLogout() {
+
         logoutBtn.setOnClickListener {
 
-            // TODO: later clear JWT token here
+            MaterialAlertDialogBuilder(this)
+                .setTitle("Logout")
+                .setMessage("Are you sure you want to logout?")
+                .setCancelable(true)
 
-            Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show()
+                .setNegativeButton("Cancel") { dialog, _ ->
+                    dialog.dismiss()
+                }
 
-            val intent = Intent(this, LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            finish()
+                .setPositiveButton("Logout") { _, _ ->
+
+                    // 🔐 Clear session
+                    val session = SessionManager(this)
+                    session.logout()
+
+                    Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
+
+                    // 🚫 Remove back stack
+                    val intent = Intent(this, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+                }
+                .show()
         }
     }
+
 }

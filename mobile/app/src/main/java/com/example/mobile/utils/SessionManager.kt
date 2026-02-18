@@ -26,5 +26,8 @@ class SessionManager(context: Context) {
         prefs.edit().clear().apply()
     }
 
-    
+    fun logout() {
+        prefs.edit().clear().apply()
+    }
+
 }
