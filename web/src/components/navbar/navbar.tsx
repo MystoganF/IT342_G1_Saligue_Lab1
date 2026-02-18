@@ -102,9 +102,9 @@ const closeModal = () => {
           <div className="nav-brand">
             <Link to="/" className="brand-link">
               <div className="brand-logo">
-                <span className="logo-text">K</span>
+                <span className="logo-text">CN</span>
               </div>
-              <span className="brand-name">Kean</span>
+              <span className="brand-name">CebuNest</span>
             </Link>
           </div>
 

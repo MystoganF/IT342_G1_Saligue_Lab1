@@ -182,19 +182,7 @@ const Login: React.FC = () => {
               />
             </div>
 
-            {/* Remember Me */}
-            <div className="form-options">
-              <label className="checkbox-label">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  disabled={isLoading || blockedTimeLeft > 0}
-                />
-                <span className="checkmark"></span>
-                <span>Remember me</span>
-              </label>
-            </div>
+          
 
             {/* Login Button */}
             <button

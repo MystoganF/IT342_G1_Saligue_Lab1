@@ -13,7 +13,7 @@ const LandingPage: React.FC = () => {
       <section className="hero">
         <div className="hero-content">
           <h1 className="hero-title">
-            Welcome to <span className="accent">Untitled</span>
+            Welcome to <span className="accent">CebuNest</span>
           </h1>
           <p className="hero-description">
             Experience the future of digital interaction with our cutting-edge platform
@@ -86,8 +86,8 @@ const LandingPage: React.FC = () => {
           <div className="footer-branding">
             <div className="footer-logo">K</div>
             <div>
-              <h3>Kean</h3>
-              <p>Innovating the digital experience</p>
+              <h3>CebuNest</h3>
+              <p>Making Renting Easy</p>
             </div>
           </div>
 
