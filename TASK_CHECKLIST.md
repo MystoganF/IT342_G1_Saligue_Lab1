@@ -107,8 +107,10 @@
 - [x] Implement Logout
   - Commit: [feat(mobile_logout): added end session feature]
 
+- [x] Implement Login Lock when Exceeding 5 attempts
+  - Commit: [feat(mobile_login): added locking mechanism when exceeding 5 attempt login]
 
-ui(mobile_landing_page): created landing page for mobile.
+
 
 ## 🔄 IN-PROGRESS Tasks
 
