@@ -11,9 +11,16 @@ class UnauthorizedInterceptor(private val context: Context) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
 
-        val response = chain.proceed(chain.request())
+        val request = chain.request()
+        val response = chain.proceed(request)
 
-        if (response.code == 401) {
+        // Check if request had Authorization header
+        val hasAuthHeader = request.header("Authorization") != null
+
+        // Only logout if:
+        // 1. Response is 401
+        // 2. Request had Authorization header (meaning user was logged in)
+        if (response.code == 401 && hasAuthHeader) {
 
             val session = SessionManager(context)
             session.logout()

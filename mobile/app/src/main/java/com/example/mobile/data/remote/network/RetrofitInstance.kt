@@ -18,8 +18,8 @@ object RetrofitInstance {
         }
 
         val client = OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(context))
-            .addInterceptor(UnauthorizedInterceptor(context))
+            .addInterceptor(AuthInterceptor(context))          // adds token header
+            .addInterceptor(UnauthorizedInterceptor(context))  // handles expired token
             .addInterceptor(logging)
             .build()
 
