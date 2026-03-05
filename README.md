@@ -1,1 +1,3 @@
 CebuNest is a centralized rental management platform designed for property owners in Cebu to list and manage their boarding houses, apartments, condos, and other accommodations. It simplifies the renting process, connecting owners with potential tenants through an integrated system.
+
+mvn spring-boot:run "-Dspring-boot.run.profiles=prod"
